@@ -31,7 +31,7 @@
 void gf2x_scalarprod(int nr, DIGIT Res[],
                      int na, DIGIT a0[], DIGIT a1[],
                      int nb, DIGIT b0[], DIGIT b1[]
-                    )
+)
 {   if(na == nb) {
         DIGIT tmp[nr];
         GF2X_MUL(nr,Res, na,a0, nb,b0);
@@ -381,7 +381,7 @@ int support_jumpdivstep(int n, int delta,
     int num_digits_j       = (j/DIGIT_SIZE_b)+1; /* (j+DIGIT_SIZE_b-1)/DIGIT_SIZE_b */
 
     DIGIT p_00[num_digits_j],p_01[num_digits_j],
-          p_10[num_digits_j],p_11[num_digits_j];
+            p_10[num_digits_j],p_11[num_digits_j];
 
     delta = support_jumpdivstep(j, delta, num_digits_j,
                                 f+(nf-num_digits_j),
@@ -407,9 +407,9 @@ int support_jumpdivstep(int n, int delta,
     int num_digits_nminusj = (n-j)/DIGIT_SIZE_b+1;
 
     DIGIT  q_00[num_digits_nminusj],
-           q_01[num_digits_nminusj],
-           q_10[num_digits_nminusj],
-           q_11[num_digits_nminusj];
+            q_01[num_digits_nminusj],
+            q_10[num_digits_nminusj],
+            q_11[num_digits_nminusj];
 
     delta = support_jumpdivstep(n - j, delta,
                                 num_digits_nminusj,
@@ -451,135 +451,314 @@ int support_jumpdivstep(int n, int delta,
 }
 #endif
 
-int jumpdivstep(int n, int delta,
-                int nf, DIGIT   f[], DIGIT g[],
+
+#include <math.h>   //log2, might use a more efficient function (?)
+typedef struct stk {
+    int n;
+    int j;
+
+    DIGIT *f;
+    DIGIT *g;
+
+    DIGIT *t00;
+    DIGIT *t01;
+    DIGIT *t10;
+    DIGIT *t11;
+
+    int visits;
+} stk;
+
+
+void printPoly(int dim, DIGIT *poly) {
+    for (int i = 0; i < dim; i++)
+        printf(" %" PRIu64, poly[i]);
+}
+
+
+static inline void assignT(struct stk *stack, DIGIT *T00, DIGIT *T01, DIGIT *T10, DIGIT *T11) {
+    stack->t00 = T00;
+    stack->t01 = T01;
+    stack->t10 = T10;
+    stack->t11 = T11;
+}
+
+int jumpdivstep(int n_in, int delta,
+                int nf, DIGIT   f_in[], DIGIT g_in[],
                 DIGIT t00[], DIGIT t01[],
-                DIGIT t10[], DIGIT t11[], float x)
-{
+                DIGIT t10[], DIGIT t11[], float x) {
 
+
+    // determining the machine word size
 #if (defined HIGH_PERFORMANCE_X86_64)
-    if (n < 256) {
-        if(n < 192) {
-            return delta = support_jumpdivstep(n, delta,
-                                               nf, f, g,
-                                               t00, t01,
-                                               t10, t11, x);
-        }
-        return delta = divstepsx_256(n, delta,
-                                     f,
-                                     g,
-                                     t00, t01,
-                                     t10, t11);
-    }
     int ws = 256;
-
-
 #elif (defined HIGH_COMPATIBILITY_X86_64)
-    if (n < 128) {
-        return delta = divstepsx_128(n, delta,
-                                     f,
-                                     g,
-                                     t00, t01,
-                                     t10, t11);
-    }
     int ws = 128;
 #else
-    if (n <= 63) {
-        return delta = divstepsx(n, delta, f[0],
-                                 g[0],
-                                 t00, t01,
-                                 t10, t11);
-    }
     int ws = DIGIT_SIZE_b;
 #endif
-    /* round the cutting point to a digit limit */
-    int j = n*x;
-    j = (j+ws-2)/(ws-1);
-    j = j * (ws-1);
+
+    int layers = log2(n_in / ws) + 1;    // includes the root node
+
+    register int n, j, num_digits_n, num_digits_j, num_digits_nminusj, sp;
+    register DIGIT *p00, *p01, *p10, *p11;
+    register DIGIT *q00, *q01, *q10, *q11;
+
+    struct stk *stack = alloca((layers+2) * sizeof(struct stk));    // to be checked
+    register struct stk *parent;
+    sp = 0;
+
+    stack->n = n_in;
+    j = n_in * x;
+    j = (j + ws - 2) / (ws - 1);
+    j = j * (ws - 1);
+    stack->j = j;
+
+    num_digits_n = nf;
+    num_digits_j = j / DIGIT_SIZE_b + 1;
+    num_digits_nminusj = (n_in - j) / DIGIT_SIZE_b + 1;
+
+    const int psize = num_digits_j;
+    const int qsize = num_digits_nminusj;
+
+    DIGIT P00[psize * layers + 1];
+    DIGIT P01[psize * layers + 1];
+    DIGIT P10[psize * layers + 1];
+    DIGIT P11[psize * layers + 1];
+
+    DIGIT Q00[qsize * layers + 1];
+    DIGIT Q01[qsize * layers + 1];
+    DIGIT Q10[qsize * layers + 1];
+    DIGIT Q11[qsize * layers + 1];
+
+    DIGIT temp[psize + qsize];
+
+    DIGIT f_sum[num_digits_n + num_digits_j];
+    DIGIT g_sum[num_digits_n + num_digits_j];
+
+    stack->f = f_in;
+    stack->g = g_in;
+
+    assignT(stack, t00, t01, t10, t11);
+
+    stack->visits = 0;
+
+    while (sp != 0 || stack->visits < 2) {
+
+        if (stack->visits == 0) { //go right
+            stack->visits++;
+            parent = stack;
+            stack++;
+
+            stack->n = parent->j;
+            j = stack->n * x;
+            j = (j + ws - 2) / (ws - 1);
+            j = j * (ws - 1);
+            stack->j = j;
+
+            num_digits_n = parent->n / DIGIT_SIZE_b + 1;
+            num_digits_j = parent->j / DIGIT_SIZE_b + 1;
+
+            stack->f = parent->f + (num_digits_n - num_digits_j);
+            stack->g = parent->g + (num_digits_n - num_digits_j);
+
+
+            p00 = P00 + (psize * sp);
+            p01 = P01 + (psize * sp);
+            p10 = P10 + (psize * sp);
+            p11 = P11 + (psize * sp);
+
+            assignT(stack, p00, p01, p10, p11);
+            
+
+            sp++;
+            stack->visits = 0;
+        }
+        else if (stack->visits == 1) {   //go left
+
+            parent = stack;
+            stack->visits++;
+            stack++;
+
+            n = parent->n - parent->j;
+            j = n * x;
+            j = (j + ws - 2) / (ws - 1);
+            j = j * (ws - 1);
+
+            stack->n = n;
+            stack->j = j;
+
+            n = parent->n;
+            j = parent->j;
+            num_digits_n = n / DIGIT_SIZE_b + 1;
+            num_digits_j = j / DIGIT_SIZE_b + 1;
+            num_digits_nminusj = (n - j) / DIGIT_SIZE_b + 1;
+
+            p00 = P00 + (psize * sp);
+            p01 = P01 + (psize * sp);
+            p10 = P10 + (psize * sp);
+            p11 = P11 + (psize * sp);
+
+            q00 = Q00 + (qsize * sp);
+            q01 = Q01 + (qsize * sp);
+            q10 = Q10 + (qsize * sp);
+            q11 = Q11 + (qsize * sp);
+
+            gf2x_scalarprod(num_digits_j + num_digits_n, f_sum,
+                            num_digits_j, p00, p01,
+                            num_digits_n, parent->f, parent->g);
+
+            gf2x_scalarprod(num_digits_j + num_digits_n, g_sum,
+                            num_digits_j, p10, p11,
+                            num_digits_n, parent->f, parent->g);
+
+            right_bit_shift_wide_n(num_digits_j + num_digits_n, f_sum, j);
+            right_bit_shift_wide_n(num_digits_j + num_digits_n, g_sum, j);
+
+            //fsum, gsum
+            stack->f = f_sum + (num_digits_j + num_digits_n - num_digits_nminusj);
+            stack->g = g_sum + (num_digits_j + num_digits_n - num_digits_nminusj);
+
+            sp++;
+            assignT(stack, q00, q01, q10, q11);
+
+            stack->visits = 0;
+        }
+        else {
+
+            num_digits_n = stack->n / DIGIT_SIZE_b + 1;
+            num_digits_j = stack->j / DIGIT_SIZE_b + 1;
+            num_digits_nminusj = (stack->n - stack->j) / DIGIT_SIZE_b + 1;
+
+            p00 = P00 + (psize * sp);
+            p01 = P01 + (psize * sp);
+            p10 = P10 + (psize * sp);
+            p11 = P11 + (psize * sp);
+
+            q00 = Q00 + (qsize * sp);
+            q01 = Q01 + (qsize * sp);
+            q10 = Q10 + (qsize * sp);
+            q11 = Q11 + (qsize * sp);
     
-    // number of digits for the polynomial
 
-    int num_digits_j       = j/DIGIT_SIZE_b+1; /* (j+DIGIT_SIZE_b-1)/DIGIT_SIZE_b */;
+            gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                            num_digits_j,                      p00, p10,
+                            num_digits_nminusj,                q00, q01);
 
-    // declaring the P matrix
+            memcpy(stack->t00,
+                   temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+                   num_digits_n * DIGIT_SIZE_B);
 
-    DIGIT p_00[num_digits_j],p_01[num_digits_j],
-          p_10[num_digits_j],p_11[num_digits_j];
+            gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                            num_digits_j,                      p01, p11,
+                            num_digits_nminusj,                q00, q01);
+            memcpy(stack->t01,
+                   temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+                   num_digits_n * DIGIT_SIZE_B);
 
-    // first jumpdivstep call
+            gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                            num_digits_j,                      p00, p10,
+                            num_digits_nminusj,                q10, q11);
+            memcpy(stack->t10,
+                   temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+                   num_digits_n * DIGIT_SIZE_B);
 
-    delta = jumpdivstep(j, delta, num_digits_j,
-                        f+(nf-num_digits_j),
-                        g+(nf-num_digits_j),
-                        p_00, p_01, p_10, p_11, x);
+            gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                            num_digits_j,                      p01, p11,
+                            num_digits_nminusj,                q10, q11);
+            memcpy(stack->t11,
+                   temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+                   num_digits_n * DIGIT_SIZE_B);
 
+            stack--;
+            sp--;
+            continue;
+        }
 
-    /* note: entire f and g must be matrixmultiplied! use the ones from above */
-    DIGIT f_sum[num_digits_j+nf];
-    DIGIT g_sum[num_digits_j+nf];
+#if (defined HIGH_PERFORMANCE_X86_64)
+        if (stack->n < 256) {
 
-    // calculating f'(x)/x^j and g(x)'/x^j
+            if(stack->n < 192) {
+                delta = support_jumpdivstep(stack->n, delta,
+                                            (stack->n / DIGIT_SIZE_b + 1), stack->f, stack->g,
+                                            stack->t00, stack->t01,
+                                            stack->t10, stack->t11, x);
+                stack--;
+                sp--;
+                continue;
+            }
+            else {
+                delta = divstepsx_256(stack->n, delta,
+                                      stack->f,
+                                      stack->g,
+                                      stack->t00, stack->t01,
+                                      stack->t10, stack->t11);
+                stack--;
+                sp--;
+                continue;
+            }
+        }
 
-    gf2x_scalarprod(num_digits_j+nf, f_sum,
-                    num_digits_j,    p_00, p_01,
-                    nf,                    f, g);
+#elif (defined HIGH_COMPATIBILITY_X86_64)
+        if (stack->n < 128) {
+        delta = divstepsx_128(stack->n, delta,
+                                     stack->f,
+                                     stack->g,
+                                     stack->t00, stack->t01,
+                                     stack->t10, stack->t11);
+        stack--;
+        sp--;
+        continue;
+    }
+#else
+    if (stack->n <= 63) {
+        delta = divstepsx(stack->n, delta, stack->f[0],
+                                 stack->g[0],
+                                 stack->t00, stack->t01,
+                                 stack->t10, stack->t11);
+        stack--;
+        sp--;
+        continue;
+    }
+#endif
+    }
 
-    gf2x_scalarprod(num_digits_j+nf, g_sum,
-                    num_digits_j,    p_10, p_11,
-                    nf,                    f, g);
+    num_digits_n = nf;
+    num_digits_j = stack->j / DIGIT_SIZE_b + 1;
+    num_digits_nminusj = (stack->n - stack->j) / DIGIT_SIZE_b + 1;
 
+    gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                    num_digits_j,                      P00, P10,
+                    num_digits_nminusj,                Q00, Q01);
 
-    right_bit_shift_wide_n(num_digits_j+nf, f_sum, j);
-    right_bit_shift_wide_n(num_digits_j+nf, g_sum, j);
-
-    /* truncate to n-j degree, i.e. to n-j bits from the bottom */
-    int num_digits_nminusj = (n-j)/DIGIT_SIZE_b+1;
-
-    // declaring the Q matrix
-    DIGIT  q_00[num_digits_nminusj],
-           q_01[num_digits_nminusj],
-           q_10[num_digits_nminusj],
-           q_11[num_digits_nminusj];
-
-    // second jumpdivstep call
-
-    delta = jumpdivstep(n - j, delta,
-                        num_digits_nminusj,
-                        f_sum + (num_digits_j+nf - num_digits_nminusj),
-                        g_sum + (num_digits_j+nf - num_digits_nminusj),
-                        q_00, q_01, q_10, q_11, x);
-
-    // calculating P x Q
-
-    DIGIT large_tmp[num_digits_j+num_digits_nminusj];
-
-    gf2x_scalarprod(num_digits_j+num_digits_nminusj, large_tmp,
-                    num_digits_j,                    p_00, p_10,
-                    num_digits_nminusj,                    q_00, q_01);
     memcpy(t00,
-           large_tmp+(num_digits_j+num_digits_nminusj-nf),
-           (nf)*DIGIT_SIZE_B);
+           temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+           num_digits_n * DIGIT_SIZE_B);
 
-    gf2x_scalarprod(num_digits_j+num_digits_nminusj, large_tmp,
-                    num_digits_j,                    p_01, p_11,
-                    num_digits_nminusj,                    q_00, q_01);
+
+    gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                    num_digits_j,                      P01, P11,
+                    num_digits_nminusj,                Q00, Q01);
     memcpy(t01,
-           large_tmp+(num_digits_j+num_digits_nminusj-nf),
-           (nf)*DIGIT_SIZE_B);
+           temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+           num_digits_n * DIGIT_SIZE_B);
 
-    gf2x_scalarprod(num_digits_j+num_digits_nminusj, large_tmp,
-                    num_digits_j,                    p_00, p_10,
-                    num_digits_nminusj,                    q_10, q_11);
+
+    gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                    num_digits_j,                      P00, P10,
+                    num_digits_nminusj,                P10, Q11);
     memcpy(t10,
-           large_tmp+(num_digits_j+num_digits_nminusj-nf),
-           (nf)*DIGIT_SIZE_B);
+           temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+           num_digits_n * DIGIT_SIZE_B);
 
-    gf2x_scalarprod(num_digits_j+num_digits_nminusj, large_tmp,
-                    num_digits_j,                    p_01, p_11,
-                    num_digits_nminusj,                    q_10, q_11);
+
+    gf2x_scalarprod(num_digits_j + num_digits_nminusj, temp,
+                    num_digits_j,                      P01, P11,
+                    num_digits_nminusj,                Q10, Q11);
+
     memcpy(t11,
-           large_tmp+(num_digits_j+num_digits_nminusj-nf),
-           (nf)*DIGIT_SIZE_B);
+           temp + (num_digits_j + num_digits_nminusj - num_digits_n),
+           num_digits_n * DIGIT_SIZE_B);
+
     return delta;
 }
 
@@ -587,13 +766,13 @@ int jumpdivstep(int n, int delta,
 int inverse_DJB(DIGIT out[], const DIGIT in[], float x)
 {
 #if NUM_DIGITS_GF2X_MODULUS == NUM_DIGITS_GF2X_ELEMENT
-    DIGIT f[NUM_DIGITS_GF2X_ELEMENT] = { 0 },   // S(x)
-                                       g[NUM_DIGITS_GF2X_ELEMENT] = { 0 };   // R(x)
+    DIGIT   f[NUM_DIGITS_GF2X_ELEMENT] = { 0 },   // S(x)
+    g[NUM_DIGITS_GF2X_ELEMENT] = { 0 };   // R(x)
 
-    DIGIT u[MATRIX_ELEM_DIGITS] = { 0 },
-                                  v[MATRIX_ELEM_DIGITS] = { 0 },
-                                          q[MATRIX_ELEM_DIGITS] = { 0 },
-                                                  r[MATRIX_ELEM_DIGITS] = { 0 };
+    DIGIT   u[MATRIX_ELEM_DIGITS] = { 0 },
+            v[MATRIX_ELEM_DIGITS] = { 0 },
+            q[MATRIX_ELEM_DIGITS] = { 0 },
+            r[MATRIX_ELEM_DIGITS] = { 0 };
 
     int delta = 1;
 
@@ -609,15 +788,11 @@ int inverse_DJB(DIGIT out[], const DIGIT in[], float x)
     gf2x_reflect_in_place(g);
     right_bit_shift_n(NUM_DIGITS_GF2X_ELEMENT, g, slack_bits_amount);
 
-    DIGIT largef[MATRIX_ELEM_DIGITS], largeg[MATRIX_ELEM_DIGITS];
+    DIGIT   largef[MATRIX_ELEM_DIGITS], largeg[MATRIX_ELEM_DIGITS];
     memset(largef,0x00,MATRIX_ELEM_DIGITS*DIGIT_SIZE_B);
-    memcpy(largef+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT),
-           f,
-           NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
+    memcpy(largef+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT), f,NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
     memset(largeg,0x00,MATRIX_ELEM_DIGITS*DIGIT_SIZE_B);
-    memcpy(largeg+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT),
-           g,
-           NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
+    memcpy(largeg+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT), g,NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
 
     delta = jumpdivstep(2 * P - 1,
                         delta, MATRIX_ELEM_DIGITS,
@@ -632,11 +807,9 @@ int inverse_DJB(DIGIT out[], const DIGIT in[], float x)
     /* reflection is full-word-wise, shift away the slack bits */
     right_bit_shift_n(NUM_DIGITS_GF2X_ELEMENT, v + (MATRIX_ELEM_DIGITS - NUM_DIGITS_GF2X_ELEMENT), slack_bits_amount);
 
-    memcpy(out, v + (MATRIX_ELEM_DIGITS - NUM_DIGITS_GF2X_ELEMENT),
-           NUM_DIGITS_GF2X_ELEMENT * DIGIT_SIZE_B);
+    memcpy(out, v + (MATRIX_ELEM_DIGITS - NUM_DIGITS_GF2X_ELEMENT),NUM_DIGITS_GF2X_ELEMENT * DIGIT_SIZE_B);
 
-    DIGIT clear_slack_mask = ( ((DIGIT) 1) <<
-                               ((DIGIT_SIZE_b) - slack_bits_amount) ) - 1;
+    DIGIT clear_slack_mask = ( ((DIGIT) 1) << ((DIGIT_SIZE_b) - slack_bits_amount) ) - 1;
     out[0] = out[0] & clear_slack_mask;
 
 #else

@@ -47,7 +47,7 @@ int support_jumpdivstep(int n, int delta,
                         DIGIT t00[], DIGIT t01[],
                         DIGIT t10[], DIGIT t11[], float x);
 
-int jumpdivstep(int n, int delta,
+int jumpdivstep(int n_in, int delta,
                 int nf, DIGIT   f[], DIGIT g[],
                 DIGIT t00[], DIGIT t01[],
                 DIGIT t10[], DIGIT t11[], float x);
