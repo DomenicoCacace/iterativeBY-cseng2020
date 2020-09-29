@@ -1,0 +1,17 @@
+name: Build and Verify
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: build-and-verify
+      working-directory: scripts
+      run: chmod +x ./functional_testing.sh && chmod +x ./build.sh && ./functional_testing.sh
