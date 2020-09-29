@@ -38,7 +38,7 @@
 
 /*************************************************************************/
 
-#define NUM_TESTS 500
+#define NUM_TESTS 1000
 
 #include "../../inverse/include/inverse_Bru.h"
 #include "../../inverse/include/inverse_exp.h"
