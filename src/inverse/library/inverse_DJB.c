@@ -482,6 +482,16 @@ static inline void assignT(struct stk *stack, DIGIT *T00, DIGIT *T01, DIGIT *T10
     stack->t11 = T11;
 }
 
+static inline int machineWordSize() {
+    #if (defined HIGH_PERFORMANCE_X86_64)
+        return 256;
+    #elif (defined HIGH_COMPATIBILITY_X86_64)
+        return 128;   
+    #endif
+        
+    return DIGIT_SIZE_b;
+}
+
 int jumpdivstep(int n_in, int delta,
                 int nf, DIGIT   f_in[], DIGIT g_in[],
                 DIGIT t00[], DIGIT t01[],
@@ -489,13 +499,9 @@ int jumpdivstep(int n_in, int delta,
 
 
     // determining the machine word size
-#if (defined HIGH_PERFORMANCE_X86_64)
-    int ws = 256;
-#elif (defined HIGH_COMPATIBILITY_X86_64)
-    int ws = 128;
-#else
-    int ws = DIGIT_SIZE_b;
-#endif
+
+
+    int ws = machineWordSize();
 
     int layers = log2(n_in / ws) + 1;    // includes the root node
 
@@ -544,7 +550,8 @@ int jumpdivstep(int n_in, int delta,
 
     while (sp != 0 || stack->visits < 2) {
 
-        if (stack->visits == 0) { //go right
+        switch (stack->visits) {
+        case 0:
             stack->visits++;
             parent = stack;
             stack++;
@@ -572,9 +579,8 @@ int jumpdivstep(int n_in, int delta,
 
             sp++;
             stack->visits = 0;
-        }
-        else if (stack->visits == 1) {   //go left
-
+            break;
+        case 1:
             parent = stack;
             stack->visits++;
             stack++;
@@ -622,9 +628,8 @@ int jumpdivstep(int n_in, int delta,
             assignT(stack, q00, q01, q10, q11);
 
             stack->visits = 0;
-        }
-        else {
-
+            break;
+        case 2:
             num_digits_n = stack->n / DIGIT_SIZE_b + 1;
             num_digits_j = stack->j / DIGIT_SIZE_b + 1;
             num_digits_nminusj = (stack->n - stack->j) / DIGIT_SIZE_b + 1;
@@ -671,7 +676,9 @@ int jumpdivstep(int n_in, int delta,
 
             stack--;
             sp--;
-            continue;
+            break;
+        default:
+            break;
         }
 
 #if (defined HIGH_PERFORMANCE_X86_64)
@@ -684,7 +691,6 @@ int jumpdivstep(int n_in, int delta,
                                             stack->t10, stack->t11, x);
                 stack--;
                 sp--;
-                continue;
             }
             else {
                 delta = divstepsx_256(stack->n, delta,
@@ -694,7 +700,6 @@ int jumpdivstep(int n_in, int delta,
                                       stack->t10, stack->t11);
                 stack--;
                 sp--;
-                continue;
             }
         }
 
@@ -707,7 +712,6 @@ int jumpdivstep(int n_in, int delta,
                                      stack->t10, stack->t11);
         stack--;
         sp--;
-        continue;
     }
 #else
     if (stack->n <= 63) {
@@ -717,7 +721,6 @@ int jumpdivstep(int n_in, int delta,
                                  stack->t10, stack->t11);
         stack--;
         sp--;
-        continue;
     }
 #endif
     }
