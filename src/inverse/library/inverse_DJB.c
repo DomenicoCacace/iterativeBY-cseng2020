@@ -28,16 +28,95 @@
 #include "../../benchmarking/include/testing_facilities.h"
 #include "../../common/include/architecture_detect.h"
 
+inline static int countZeros(int dim, DIGIT *p0, DIGIT *p1) {
+    int i;
+    for(i = 0; i < dim; ++i) {
+        if((p0[i] | p1[i]) != 0)
+            break;
+    }
+    return i;
+}
+
+int skipped = 0;
 void gf2x_scalarprod(int nr, DIGIT Res[],
                      int na, DIGIT a0[], DIGIT a1[],
-                     int nb, DIGIT b0[], DIGIT b1[]
-)
-{   if(na == nb) {
+                     int nb, DIGIT b0[], DIGIT b1[]) {
+    
+    int skip_a = countZeros(na, a0, a1);
+    int skip_b = countZeros(nb, b0, b1);
+
+
+    int dig_a = na - skip_a;
+    int dig_b = nb - skip_b;
+    int dig_res = dig_a + dig_b;
+
+    if(dig_a == dig_b) {
+        DIGIT tmp[dig_res];
+        GF2X_MUL(dig_res, Res, dig_a, a0+skip_a, dig_b, b0+skip_b);
+        GF2X_MUL(dig_res, tmp, dig_a, a1+skip_a, dig_b, b1+skip_b);
+        gf2x_add(dig_res, tmp, dig_res, Res, dig_res, tmp);
+        memset(Res, 0x00, (nr - dig_res)*DIGIT_SIZE_B);
+        memcpy(Res+(nr-dig_res), tmp, dig_res*DIGIT_SIZE_B);
+    }/*
+    else if(dig_a > dig_b) {
+        dig_res = 2*dig_a;
+        DIGIT tmp[dig_res], tmp2[dig_res];
+
+        DIGIT bufb[dig_a];
+        memset(bufb,0x00,(dig_a-dig_b)*DIGIT_SIZE_B);
+
+        memcpy(bufb+(dig_a-dig_b), b0+skip_b, dig_b*DIGIT_SIZE_B);
+        GF2X_MUL(dig_res,tmp, dig_a, a0+skip_a, dig_a,bufb);
+
+
+        memset(bufb,0x00,(dig_a-dig_b)*DIGIT_SIZE_B);
+
+        memcpy(bufb+(dig_a-dig_b),b1+skip_b,dig_b*DIGIT_SIZE_B);
+        GF2X_MUL(dig_res,tmp2, dig_a, a1+skip_a, dig_a,bufb);
+
+        gf2x_add(dig_res, tmp, dig_res, tmp2, dig_res, tmp);
+        memset(Res, 0x00, (nr-dig_res)*DIGIT_SIZE_B);
+        memcpy(Res+(nr-dig_res), tmp+(dig_a-dig_b), (dig_res)*DIGIT_SIZE_B);
+    }*/
+  /*  else
+    {
+        dig_res = 2*dig_b;
+        DIGIT tmp[dig_res], tmp2[dig_res];
+
+        DIGIT bufa[dig_b];
+        memset(bufa,0x00,(dig_b-dig_a)*DIGIT_SIZE_B);
+
+        memcpy(bufa+(dig_b-dig_a), a0+skip_a, dig_a*DIGIT_SIZE_B);
+        GF2X_MUL(dig_res,tmp, dig_b,bufa, dig_b, b0+skip_b);
+
+        memset(bufa,0x00,(dig_b-dig_a)*DIGIT_SIZE_B);
+
+        memcpy(bufa+(dig_b-dig_a),a1+skip_a,dig_a*DIGIT_SIZE_B);
+        GF2X_MUL(dig_res, tmp2, dig_b, bufa, dig_b, b1+skip_b);
+
+        gf2x_add(dig_res, tmp, dig_res, tmp2, dig_res, tmp);
+        memset(Res, 0x00, (nr-dig_res)*DIGIT_SIZE_B);
+        memcpy(Res+(nr-dig_res), tmp+dig_res-(dig_a+dig_b), (dig_a+dig_b)*DIGIT_SIZE_B);
+    }*/
+/*
+    DIGIT tmp[2*op_dim];
+    GF2X_MUL(2*op_dim, Res, op_dim, a0+(na - op_dim), op_dim, b0+(nb - op_dim));
+    GF2X_MUL(2*op_dim, tmp, op_dim, a1+(na - op_dim), op_dim, b1+(nb - op_dim));
+    gf2x_add(2*op_dim, tmp, 2*op_dim, Res, 2*op_dim, tmp);
+    memset(Res, 0x00, (nr - 2*op_dim)*DIGIT_SIZE_B);  
+    print_pol(tmp, "RES", 2*op_dim); 
+    memcpy(Res+(nr - 2*op_dim), tmp, 2*op_dim*DIGIT_SIZE_B);
+*/
+    
+
+    /*
+       if(na == nb) {
         DIGIT tmp[nr];
         GF2X_MUL(nr,Res, na,a0, nb,b0);
         GF2X_MUL(nr,tmp, na,a1, nb,b1);
         gf2x_add(nr, Res, nr, tmp, nr, Res);
-    } else if (na > nb) {
+    } */
+    else if (na > nb) {
         DIGIT   tmp[na*2];
 
         DIGIT  bufb[na];
@@ -54,7 +133,8 @@ void gf2x_scalarprod(int nr, DIGIT Res[],
         gf2x_add(na*2, tmp2, na*2, tmp, na*2, tmp2);
 
         memcpy(Res,tmp2+(na-nb),nr*DIGIT_SIZE_B);
-    } else { /*nb > na*/
+    } 
+    else { //nb > na
         DIGIT   tmp[nb*2];
 
         DIGIT  bufa[nb];
@@ -468,13 +548,6 @@ typedef struct stk {
     int visits;
 } stk;
 
-
-void printPoly(int dim, DIGIT *poly) {
-    for (int i = 0; i < dim; i++)
-        printf(" %" PRIu64, poly[i]);
-}
-
-
 static inline void assignT(struct stk *stack, DIGIT *T00, DIGIT *T01, DIGIT *T10, DIGIT *T11) {
     stack->t00 = T00;
     stack->t01 = T01;
@@ -492,6 +565,34 @@ static inline int machineWordSize() {
     return DIGIT_SIZE_b;
 }
 
+static inline int countSkippable(int dim, DIGIT *a, DIGIT *b) {
+    int i = 0;
+    for(i = 0; i < dim; i++) {
+        if((a[i] | b[i]) != 0)
+            break;
+    }
+    return i;
+}
+void printStackInfo(struct stk *stack, DIGIT *p00, DIGIT *p01, DIGIT *p10, DIGIT *p11, DIGIT *q00, DIGIT *q01, DIGIT *q10, DIGIT *q11) {
+    int num_digits_n = stack->n / DIGIT_SIZE_B + 1;
+    int num_digits_j = stack->j / DIGIT_SIZE_b + 1;
+    int num_digits_nminusj = (stack->n - stack->j) / DIGIT_SIZE_b + 1;
+
+    print_pol(p00, "p00", num_digits_j);
+    print_pol(p01, "p01", num_digits_j);
+    print_pol(p10, "p10", num_digits_j);
+    print_pol(p11, "p11", num_digits_j);
+    print_pol(q00, "q00", num_digits_nminusj);
+    print_pol(q01, "q01", num_digits_nminusj);
+    print_pol(q10, "q10", num_digits_nminusj);
+    print_pol(q11, "q11", num_digits_nminusj);
+    print_pol(stack->t00, "t00", num_digits_n);
+    print_pol(stack->t01, "t01", num_digits_n);
+    print_pol(stack->t10, "t10", num_digits_n);
+    print_pol(stack->t11, "t11", num_digits_n);
+
+}
+int acc = 0;
 int jumpdivstep(int n_in, int delta,
                 int nf, DIGIT   f_in[], DIGIT g_in[],
                 DIGIT t00[], DIGIT t01[],
@@ -511,6 +612,7 @@ int jumpdivstep(int n_in, int delta,
 
     struct stk *stack = alloca((layers+2) * sizeof(struct stk));    // to be checked
     register struct stk *parent;
+    register int skippable = 0;
     sp = 0;
 
     stack->n = n_in;
@@ -624,6 +726,13 @@ int jumpdivstep(int n_in, int delta,
             stack->f = f_sum + (num_digits_j + num_digits_n - num_digits_nminusj);
             stack->g = g_sum + (num_digits_j + num_digits_n - num_digits_nminusj);
 
+/*
+            print_pol(p00, "p00", num_digits_j);
+            print_pol(p01, "p01", num_digits_j);
+            print_pol(stack->f, "  f", num_digits_n);
+            printf("\n");*/
+
+
             sp++;
             assignT(stack, q00, q01, q10, q11);
 
@@ -673,6 +782,8 @@ int jumpdivstep(int n_in, int delta,
             memcpy(stack->t11,
                    temp + (num_digits_j + num_digits_nminusj - num_digits_n),
                    num_digits_n * DIGIT_SIZE_B);
+
+            //printStackInfo(stack, p00, p01, p10, p11, q00, q01, q10, q11);
 
             stack--;
             sp--;
@@ -762,6 +873,8 @@ int jumpdivstep(int n_in, int delta,
            temp + (num_digits_j + num_digits_nminusj - num_digits_n),
            num_digits_n * DIGIT_SIZE_B);
 
+    //printf("total skipped: %d  ", acc);
+    acc = 0;
     return delta;
 }
 
@@ -796,6 +909,15 @@ int inverse_DJB(DIGIT out[], const DIGIT in[], float x)
     memcpy(largef+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT), f,NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
     memset(largeg,0x00,MATRIX_ELEM_DIGITS*DIGIT_SIZE_B);
     memcpy(largeg+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT), g,NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
+/*
+    DIGIT A[3], B[2], RES[5], ZERO[3];
+    A[1] = 58;
+    A[2] = 15;
+    B[1] = 179;
+
+    gf2x_scalarprod(5, RES, 3, A, ZERO, 2, B, ZERO);
+    print_pol(RES, "res", 5);*/
+
 
     delta = jumpdivstep(2 * P - 1,
                         delta, MATRIX_ELEM_DIGITS,
