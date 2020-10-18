@@ -84,11 +84,11 @@ static
 void print_pol(DIGIT pol[], char polin[], int len)
 {
     int i;
-    fprintf(stderr,"%s", polin);
+    fprintf(stdout,"%s", polin);
     for (i = 0; i < len; i++) {
-        fprintf(stderr," %016lX ", pol[i]);
+        fprintf(stdout," %016lX ", pol[i]);
     }
-    fprintf(stderr,"\n");
+    fprintf(stdout,"\n");
 
 
 }

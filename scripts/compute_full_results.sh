@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./build.sh
+./build.sh full_timing
 
 cd ..
 BASE_DIR=$(pwd)
@@ -14,7 +14,7 @@ COMMIT=$(git rev-parse --short HEAD)
 
 mkdir -p "${BASE_DIR}/logs/full_timing"
 
-logPath="${BASE_DIR}/logs/by_timing/${index}_performanceLog_full_${COMMIT}.csv"
+logPath="${BASE_DIR}/logs/full_timing/${index}_performanceLog_full_${COMMIT}.csv"
 
 sudo cpupower frequency-set -f 1900M
 

@@ -37,7 +37,6 @@ inline static int countZeros(int dim, DIGIT *p0, DIGIT *p1) {
     return i;
 }
 
-int skipped = 0;
 void gf2x_scalarprod(int nr, DIGIT Res[],
                      int na, DIGIT a0[], DIGIT a1[],
                      int nb, DIGIT b0[], DIGIT b1[]) {
@@ -45,112 +44,53 @@ void gf2x_scalarprod(int nr, DIGIT Res[],
     int skip_a = countZeros(na, a0, a1);
     int skip_b = countZeros(nb, b0, b1);
 
-
     int dig_a = na - skip_a;
     int dig_b = nb - skip_b;
     int dig_res = dig_a + dig_b;
+
 
     if(dig_a == dig_b) {
         DIGIT tmp[dig_res];
         GF2X_MUL(dig_res, Res, dig_a, a0+skip_a, dig_b, b0+skip_b);
         GF2X_MUL(dig_res, tmp, dig_a, a1+skip_a, dig_b, b1+skip_b);
+
         gf2x_add(dig_res, tmp, dig_res, Res, dig_res, tmp);
         memset(Res, 0x00, (nr - dig_res)*DIGIT_SIZE_B);
         memcpy(Res+(nr-dig_res), tmp, dig_res*DIGIT_SIZE_B);
-    }/*
+    }
     else if(dig_a > dig_b) {
-        dig_res = 2*dig_a;
-        DIGIT tmp[dig_res], tmp2[dig_res];
+        DIGIT tmp[dig_a*2];
 
         DIGIT bufb[dig_a];
-        memset(bufb,0x00,(dig_a-dig_b)*DIGIT_SIZE_B);
-
+        memset(bufb, 0x00, (dig_a-dig_b)*DIGIT_SIZE_B);
         memcpy(bufb+(dig_a-dig_b), b0+skip_b, dig_b*DIGIT_SIZE_B);
-        GF2X_MUL(dig_res,tmp, dig_a, a0+skip_a, dig_a,bufb);
+        GF2X_MUL(dig_a*2, tmp, dig_a, a0+skip_a, dig_a, bufb);
 
+        DIGIT tmp2[dig_a*2];
+        memset(bufb, 0x00, (dig_a-dig_b)*DIGIT_SIZE_B);
+        memcpy(bufb+(dig_a-dig_b), b1+skip_b, dig_b*DIGIT_SIZE_B);
+        GF2X_MUL(dig_a*2, tmp2, dig_a, a1+skip_a, dig_a, bufb);
 
-        memset(bufb,0x00,(dig_a-dig_b)*DIGIT_SIZE_B);
-
-        memcpy(bufb+(dig_a-dig_b),b1+skip_b,dig_b*DIGIT_SIZE_B);
-        GF2X_MUL(dig_res,tmp2, dig_a, a1+skip_a, dig_a,bufb);
-
-        gf2x_add(dig_res, tmp, dig_res, tmp2, dig_res, tmp);
+        gf2x_add(dig_a*2, tmp2, dig_a*2, tmp, dig_a*2, tmp2);
         memset(Res, 0x00, (nr-dig_res)*DIGIT_SIZE_B);
-        memcpy(Res+(nr-dig_res), tmp+(dig_a-dig_b), (dig_res)*DIGIT_SIZE_B);
-    }*/
-  /*  else
-    {
-        dig_res = 2*dig_b;
-        DIGIT tmp[dig_res], tmp2[dig_res];
+        memcpy(Res+(nr-dig_res), tmp2+(dig_a-dig_b), (dig_a+dig_b)*DIGIT_SIZE_B);
+    }
+    else {
+        DIGIT tmp[dig_b*2];
 
         DIGIT bufa[dig_b];
-        memset(bufa,0x00,(dig_b-dig_a)*DIGIT_SIZE_B);
-
+        memset(bufa, 0x00, (dig_b-dig_a)*DIGIT_SIZE_B);
         memcpy(bufa+(dig_b-dig_a), a0+skip_a, dig_a*DIGIT_SIZE_B);
-        GF2X_MUL(dig_res,tmp, dig_b,bufa, dig_b, b0+skip_b);
+        GF2X_MUL(dig_b*2, tmp, dig_b, bufa, dig_b, b0+skip_b);
 
-        memset(bufa,0x00,(dig_b-dig_a)*DIGIT_SIZE_B);
+        DIGIT tmp2[dig_b*2];
+        memset(bufa, 0x00, (dig_b-dig_a)*DIGIT_SIZE_B);
+        memcpy(bufa+(dig_b-dig_a), a1+skip_a, dig_a*DIGIT_SIZE_B);
+        GF2X_MUL(dig_b*2, tmp2, dig_b, bufa, dig_b, b1+skip_b);
 
-        memcpy(bufa+(dig_b-dig_a),a1+skip_a,dig_a*DIGIT_SIZE_B);
-        GF2X_MUL(dig_res, tmp2, dig_b, bufa, dig_b, b1+skip_b);
-
-        gf2x_add(dig_res, tmp, dig_res, tmp2, dig_res, tmp);
+        gf2x_add(dig_b*2, tmp2, dig_b*2, tmp, dig_b*2, tmp2);
         memset(Res, 0x00, (nr-dig_res)*DIGIT_SIZE_B);
-        memcpy(Res+(nr-dig_res), tmp+dig_res-(dig_a+dig_b), (dig_a+dig_b)*DIGIT_SIZE_B);
-    }*/
-/*
-    DIGIT tmp[2*op_dim];
-    GF2X_MUL(2*op_dim, Res, op_dim, a0+(na - op_dim), op_dim, b0+(nb - op_dim));
-    GF2X_MUL(2*op_dim, tmp, op_dim, a1+(na - op_dim), op_dim, b1+(nb - op_dim));
-    gf2x_add(2*op_dim, tmp, 2*op_dim, Res, 2*op_dim, tmp);
-    memset(Res, 0x00, (nr - 2*op_dim)*DIGIT_SIZE_B);  
-    print_pol(tmp, "RES", 2*op_dim); 
-    memcpy(Res+(nr - 2*op_dim), tmp, 2*op_dim*DIGIT_SIZE_B);
-*/
-    
-
-    /*
-       if(na == nb) {
-        DIGIT tmp[nr];
-        GF2X_MUL(nr,Res, na,a0, nb,b0);
-        GF2X_MUL(nr,tmp, na,a1, nb,b1);
-        gf2x_add(nr, Res, nr, tmp, nr, Res);
-    } */
-    else if (na > nb) {
-        DIGIT   tmp[na*2];
-
-        DIGIT  bufb[na];
-        memset(bufb,0x00,(na-nb)*DIGIT_SIZE_B);
-        memcpy(bufb+(na-nb),b0,nb*DIGIT_SIZE_B);
-        GF2X_MUL(na*2,tmp, na,a0, na,bufb);
-
-        DIGIT  tmp2[na*2];
-
-        memset(bufb,0x00,(na-nb)*DIGIT_SIZE_B);
-        memcpy(bufb+(na-nb),b1,nb*DIGIT_SIZE_B);
-
-        GF2X_MUL(na*2,tmp2, na,a1, na,bufb);
-        gf2x_add(na*2, tmp2, na*2, tmp, na*2, tmp2);
-
-        memcpy(Res,tmp2+(na-nb),nr*DIGIT_SIZE_B);
-    } 
-    else { //nb > na
-        DIGIT   tmp[nb*2];
-
-        DIGIT  bufa[nb];
-        memset(bufa,0x00,(nb-na)*DIGIT_SIZE_B);
-        memcpy(bufa+(nb-na),a0,na*DIGIT_SIZE_B);
-        GF2X_MUL(nb*2,tmp, nb, bufa, nb,b0);
-
-        DIGIT  tmp2[nb*2];
-
-        memset(bufa,0x00,(nb-na)*DIGIT_SIZE_B);
-        memcpy(bufa+(nb-na),a1,na*DIGIT_SIZE_B);
-
-        GF2X_MUL(nb*2,tmp2, nb,bufa, nb,b1);
-
-        gf2x_add(nb*2, tmp2, nb*2, tmp, nb*2, tmp2);
-        memcpy(Res,tmp2+(nb*2-(nb+na)),(na+nb)*DIGIT_SIZE_B);
+        memcpy(Res+(nr-dig_res), tmp2+(dig_b-dig_a), (dig_a+dig_b)*DIGIT_SIZE_B);
     }
 }
 
@@ -592,7 +532,7 @@ void printStackInfo(struct stk *stack, DIGIT *p00, DIGIT *p01, DIGIT *p10, DIGIT
     print_pol(stack->t11, "t11", num_digits_n);
 
 }
-int acc = 0;
+
 int jumpdivstep(int n_in, int delta,
                 int nf, DIGIT   f_in[], DIGIT g_in[],
                 DIGIT t00[], DIGIT t01[],
@@ -612,7 +552,6 @@ int jumpdivstep(int n_in, int delta,
 
     struct stk *stack = alloca((layers+2) * sizeof(struct stk));    // to be checked
     register struct stk *parent;
-    register int skippable = 0;
     sp = 0;
 
     stack->n = n_in;
@@ -726,13 +665,6 @@ int jumpdivstep(int n_in, int delta,
             stack->f = f_sum + (num_digits_j + num_digits_n - num_digits_nminusj);
             stack->g = g_sum + (num_digits_j + num_digits_n - num_digits_nminusj);
 
-/*
-            print_pol(p00, "p00", num_digits_j);
-            print_pol(p01, "p01", num_digits_j);
-            print_pol(stack->f, "  f", num_digits_n);
-            printf("\n");*/
-
-
             sp++;
             assignT(stack, q00, q01, q10, q11);
 
@@ -783,8 +715,6 @@ int jumpdivstep(int n_in, int delta,
                    temp + (num_digits_j + num_digits_nminusj - num_digits_n),
                    num_digits_n * DIGIT_SIZE_B);
 
-            //printStackInfo(stack, p00, p01, p10, p11, q00, q01, q10, q11);
-
             stack--;
             sp--;
             break;
@@ -834,6 +764,7 @@ int jumpdivstep(int n_in, int delta,
         sp--;
     }
 #endif
+
     }
 
     num_digits_n = nf;
@@ -873,8 +804,7 @@ int jumpdivstep(int n_in, int delta,
            temp + (num_digits_j + num_digits_nminusj - num_digits_n),
            num_digits_n * DIGIT_SIZE_B);
 
-    //printf("total skipped: %d  ", acc);
-    acc = 0;
+
     return delta;
 }
 

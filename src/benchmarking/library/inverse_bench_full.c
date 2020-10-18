@@ -183,7 +183,7 @@ int main(int argc, char const *argv[])
     generate_random_invertible_element(input);
     input_trinomial[NUM_DIGITS_GF2X_ELEMENT-1] = (DIGIT)7;
 
-    /*
+    
     rnd = benchmark_Bru(out,input);
     printf(",");
     trinomial = benchmark_Bru(out,input_trinomial);
@@ -193,14 +193,12 @@ int main(int argc, char const *argv[])
     printf(",");
     trinomial = benchmark_KTT(out,input_trinomial);
     printf(",%lf,",welch_t_statistic(rnd,trinomial));
-    */
 
     rnd = benchmark_DJB(out,input);
     printf(",");
     trinomial = benchmark_DJB(out,input_trinomial);
     printf(",%lf,",welch_t_statistic(rnd,trinomial));
 
-    /*
     rnd = benchmark_exp_compact(out, input);
     printf(",");
     trinomial = benchmark_exp_compact(out, input_trinomial);
@@ -216,6 +214,6 @@ int main(int argc, char const *argv[])
     printf(",");
     trinomial = benchmark_exp(out, input_trinomial);
     printf(",%lf\n",welch_t_statistic(rnd,trinomial));
-    */
+    
     return 0;
 }
