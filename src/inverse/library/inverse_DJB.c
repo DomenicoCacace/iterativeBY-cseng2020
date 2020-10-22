@@ -28,69 +28,49 @@
 #include "../../benchmarking/include/testing_facilities.h"
 #include "../../common/include/architecture_detect.h"
 
-inline static int countZeros(int dim, DIGIT *p0, DIGIT *p1) {
-    int i;
-    for(i = 0; i < dim; ++i) {
-        if((p0[i] | p1[i]) != 0)
-            break;
-    }
-    return i;
-}
-
 void gf2x_scalarprod(int nr, DIGIT Res[],
                      int na, DIGIT a0[], DIGIT a1[],
-                     int nb, DIGIT b0[], DIGIT b1[]) {
-    
-    int skip_a = countZeros(na, a0, a1);
-    int skip_b = countZeros(nb, b0, b1);
+                     int nb, DIGIT b0[], DIGIT b1[]
+)
+{   if(na == nb) {
+        DIGIT tmp[nr];
+        GF2X_MUL(nr,Res, na,a0, nb,b0);
+        GF2X_MUL(nr,tmp, na,a1, nb,b1);
+        gf2x_add(nr, Res, nr, tmp, nr, Res);
+    } else if (na > nb) {
+        DIGIT   tmp[na*2];
 
-    int dig_a = na - skip_a;
-    int dig_b = nb - skip_b;
-    int dig_res = dig_a + dig_b;
+        DIGIT  bufb[na];
+        memset(bufb,0x00,(na-nb)*DIGIT_SIZE_B);
+        memcpy(bufb+(na-nb),b0,nb*DIGIT_SIZE_B);
+        GF2X_MUL(na*2,tmp, na,a0, na,bufb);
 
+        DIGIT  tmp2[na*2];
 
-    if(dig_a == dig_b) {
-        DIGIT tmp[dig_res];
-        GF2X_MUL(dig_res, Res, dig_a, a0+skip_a, dig_b, b0+skip_b);
-        GF2X_MUL(dig_res, tmp, dig_a, a1+skip_a, dig_b, b1+skip_b);
+        memset(bufb,0x00,(na-nb)*DIGIT_SIZE_B);
+        memcpy(bufb+(na-nb),b1,nb*DIGIT_SIZE_B);
 
-        gf2x_add(dig_res, tmp, dig_res, Res, dig_res, tmp);
-        memset(Res, 0x00, (nr - dig_res)*DIGIT_SIZE_B);
-        memcpy(Res+(nr-dig_res), tmp, dig_res*DIGIT_SIZE_B);
-    }
-    else if(dig_a > dig_b) {
-        DIGIT tmp[dig_a*2];
+        GF2X_MUL(na*2,tmp2, na,a1, na,bufb);
+        gf2x_add(na*2, tmp2, na*2, tmp, na*2, tmp2);
 
-        DIGIT bufb[dig_a];
-        memset(bufb, 0x00, (dig_a-dig_b)*DIGIT_SIZE_B);
-        memcpy(bufb+(dig_a-dig_b), b0+skip_b, dig_b*DIGIT_SIZE_B);
-        GF2X_MUL(dig_a*2, tmp, dig_a, a0+skip_a, dig_a, bufb);
+        memcpy(Res,tmp2+(na-nb),nr*DIGIT_SIZE_B);
+    } else { /*nb > na*/
+        DIGIT   tmp[nb*2];
 
-        DIGIT tmp2[dig_a*2];
-        memset(bufb, 0x00, (dig_a-dig_b)*DIGIT_SIZE_B);
-        memcpy(bufb+(dig_a-dig_b), b1+skip_b, dig_b*DIGIT_SIZE_B);
-        GF2X_MUL(dig_a*2, tmp2, dig_a, a1+skip_a, dig_a, bufb);
+        DIGIT  bufa[nb];
+        memset(bufa,0x00,(nb-na)*DIGIT_SIZE_B);
+        memcpy(bufa+(nb-na),a0,na*DIGIT_SIZE_B);
+        GF2X_MUL(nb*2,tmp, nb, bufa, nb,b0);
 
-        gf2x_add(dig_a*2, tmp2, dig_a*2, tmp, dig_a*2, tmp2);
-        memset(Res, 0x00, (nr-dig_res)*DIGIT_SIZE_B);
-        memcpy(Res+(nr-dig_res), tmp2+(dig_a-dig_b), (dig_a+dig_b)*DIGIT_SIZE_B);
-    }
-    else {
-        DIGIT tmp[dig_b*2];
+        DIGIT  tmp2[nb*2];
 
-        DIGIT bufa[dig_b];
-        memset(bufa, 0x00, (dig_b-dig_a)*DIGIT_SIZE_B);
-        memcpy(bufa+(dig_b-dig_a), a0+skip_a, dig_a*DIGIT_SIZE_B);
-        GF2X_MUL(dig_b*2, tmp, dig_b, bufa, dig_b, b0+skip_b);
+        memset(bufa,0x00,(nb-na)*DIGIT_SIZE_B);
+        memcpy(bufa+(nb-na),a1,na*DIGIT_SIZE_B);
 
-        DIGIT tmp2[dig_b*2];
-        memset(bufa, 0x00, (dig_b-dig_a)*DIGIT_SIZE_B);
-        memcpy(bufa+(dig_b-dig_a), a1+skip_a, dig_a*DIGIT_SIZE_B);
-        GF2X_MUL(dig_b*2, tmp2, dig_b, bufa, dig_b, b1+skip_b);
+        GF2X_MUL(nb*2,tmp2, nb,bufa, nb,b1);
 
-        gf2x_add(dig_b*2, tmp2, dig_b*2, tmp, dig_b*2, tmp2);
-        memset(Res, 0x00, (nr-dig_res)*DIGIT_SIZE_B);
-        memcpy(Res+(nr-dig_res), tmp2+(dig_b-dig_a), (dig_a+dig_b)*DIGIT_SIZE_B);
+        gf2x_add(nb*2, tmp2, nb*2, tmp, nb*2, tmp2);
+        memcpy(Res,tmp2+(nb*2-(nb+na)),(na+nb)*DIGIT_SIZE_B);
     }
 }
 
@@ -488,6 +468,13 @@ typedef struct stk {
     int visits;
 } stk;
 
+
+void printPoly(int dim, DIGIT *poly) {
+    for (int i = 0; i < dim; i++)
+        printf(" %" PRIu64, poly[i]);
+}
+
+
 static inline void assignT(struct stk *stack, DIGIT *T00, DIGIT *T01, DIGIT *T10, DIGIT *T11) {
     stack->t00 = T00;
     stack->t01 = T01;
@@ -503,34 +490,6 @@ static inline int machineWordSize() {
     #endif
         
     return DIGIT_SIZE_b;
-}
-
-static inline int countSkippable(int dim, DIGIT *a, DIGIT *b) {
-    int i = 0;
-    for(i = 0; i < dim; i++) {
-        if((a[i] | b[i]) != 0)
-            break;
-    }
-    return i;
-}
-void printStackInfo(struct stk *stack, DIGIT *p00, DIGIT *p01, DIGIT *p10, DIGIT *p11, DIGIT *q00, DIGIT *q01, DIGIT *q10, DIGIT *q11) {
-    int num_digits_n = stack->n / DIGIT_SIZE_B + 1;
-    int num_digits_j = stack->j / DIGIT_SIZE_b + 1;
-    int num_digits_nminusj = (stack->n - stack->j) / DIGIT_SIZE_b + 1;
-
-    print_pol(p00, "p00", num_digits_j);
-    print_pol(p01, "p01", num_digits_j);
-    print_pol(p10, "p10", num_digits_j);
-    print_pol(p11, "p11", num_digits_j);
-    print_pol(q00, "q00", num_digits_nminusj);
-    print_pol(q01, "q01", num_digits_nminusj);
-    print_pol(q10, "q10", num_digits_nminusj);
-    print_pol(q11, "q11", num_digits_nminusj);
-    print_pol(stack->t00, "t00", num_digits_n);
-    print_pol(stack->t01, "t01", num_digits_n);
-    print_pol(stack->t10, "t10", num_digits_n);
-    print_pol(stack->t11, "t11", num_digits_n);
-
 }
 
 int jumpdivstep(int n_in, int delta,
@@ -764,7 +723,6 @@ int jumpdivstep(int n_in, int delta,
         sp--;
     }
 #endif
-
     }
 
     num_digits_n = nf;
@@ -804,7 +762,6 @@ int jumpdivstep(int n_in, int delta,
            temp + (num_digits_j + num_digits_nminusj - num_digits_n),
            num_digits_n * DIGIT_SIZE_B);
 
-
     return delta;
 }
 
@@ -839,15 +796,6 @@ int inverse_DJB(DIGIT out[], const DIGIT in[], float x)
     memcpy(largef+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT), f,NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
     memset(largeg,0x00,MATRIX_ELEM_DIGITS*DIGIT_SIZE_B);
     memcpy(largeg+(MATRIX_ELEM_DIGITS-NUM_DIGITS_GF2X_ELEMENT), g,NUM_DIGITS_GF2X_ELEMENT*DIGIT_SIZE_B);
-/*
-    DIGIT A[3], B[2], RES[5], ZERO[3];
-    A[1] = 58;
-    A[2] = 15;
-    B[1] = 179;
-
-    gf2x_scalarprod(5, RES, 3, A, ZERO, 2, B, ZERO);
-    print_pol(RES, "res", 5);*/
-
 
     delta = jumpdivstep(2 * P - 1,
                         delta, MATRIX_ELEM_DIGITS,
