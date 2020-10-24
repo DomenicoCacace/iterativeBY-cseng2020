@@ -1,45 +1,36 @@
 import math
 
+# Contains the fundamental information needed for each recursive step
 class Node(object):
-    def __init__(self, n, j, num_digits_n, num_digits_j):
+    def __init__(self, n, digit_size, ws):
         self.n = n
-        self.j = j
-        self.num_digits_n = num_digits_n
-        self.num_digits_j = num_digits_j
-        self.visits = 0
+        self.j = math.floor(n/2)
+        self.j = math.floor((self.j+ws-2)/(ws-1))
+        self.j = math.floor(self.j*(ws-1))
+        self.nminusj = n - self.j
+
+        self.num_digits_n = math.floor(n/digit_size)+1
+        self.num_digits_j = math.floor(self.j/digit_size)+1
+        self.num_digits_nminusj = math.floor(self.nminusj/digit_size)+1
+
         self.right = None
         self.left = None
 
-
+# Recursively determines the core parameters used in the various recursive
+# calls, building a sort of recursion tree to be later analyzed
 def buildTree(parent, digit_size, ws):
     if (parent.n >= ws):
-        n = parent.j
-        j = math.floor(n/2)
-        j = math.floor((j+ws-2)/(ws-1))
-        j = math.floor(j*(ws-1))
-        num_digits_n = math.floor(n/digit_size) + 1
-        num_digits_j = math.floor(j/digit_size) + 1
-
-        parent.right = Node(n, j, num_digits_n, num_digits_j)
+        parent.right = Node(parent.j, digit_size, ws)
         buildTree(parent.right, digit_size, ws)
 
-        n = parent.n - parent.j
-        j = math.floor(n/2)
-        j = math.floor((j+ws-2)/(ws-1))
-        j = math.floor(j*(ws-1))
-        num_digits_n = math.floor(n/digit_size) + 1
-        num_digits_j = math.floor(j/digit_size) + 1
-
-        parent.left = Node(n, j, num_digits_n, num_digits_j)
+        parent.left = Node(parent.nminusj, digit_size, ws)
         buildTree(parent.left, digit_size, ws)
-
-    else:
-        return None
+    return None
 
 def printTree(root):
     if (root != None):
         printTree(root.right)
-        print(root.num_digits_n)
+        print(root.num_digits_j)
         printTree(root.left)
     return
 
