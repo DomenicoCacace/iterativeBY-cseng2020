@@ -14,7 +14,7 @@ WS = 256
 def generateTree(p):
     n = 2*p-1
 
-    root = tree.Node(n, DIGIT_SIZE_b, WS)
+    root = tree.Node(n, None, DIGIT_SIZE_b, WS)
     tree.buildTree(root, DIGIT_SIZE_b, WS)
 
     return root
@@ -22,31 +22,38 @@ def generateTree(p):
 # Calculates the amount of memory to be allocated to store all the P and
 # Q matrices during the execution
 def calculatePQsize(root):
-    if (root != None):
-        pr, qr = calculatePQsize(root.right)
-        pl, ql = calculatePQsize(root.left)
-        if (root.left != None or root.right != None):   # analyzing an intermediate node
-            p = pr + pl + root.num_digits_j
-            q = qr + ql + root.num_digits_nminusj
-        else:   # leaf nodes do not contribute to the p and q sizes
-            p = pr + pl
-            q = qr + ql
-        return p, q
-    else:
-        return 0, 0
+
+    size = root.num_digits_n + root.num_digits_j
+
+    return size, size
+
+    # if (root != None):
+    #     pr, qr = calculatePQsize(root.right)
+    #     pl, ql = calculatePQsize(root.left)
+    #     if (root.left != None or root.right != None):   # analyzing an intermediate node
+    #         p = pr + pl + root.num_digits_j
+    #         q = qr + ql + root.num_digits_nminusj
+    #     else:   # leaf nodes do not contribute to the p and q sizes
+    #         p = pr + pl
+    #         q = qr + ql
+    #     return p, q
+    # else:
+    #     return 0, 0
     
 
 # tbd
 def generateSrc(p):
-
+    
+    depth = math.floor(math.log2((2*p-1)/WS)) + 1
     recTree = generateTree(p)
     tree.printTree(recTree)
     psize, qsize = calculatePQsize(recTree)
-    print(psize)
-    print(qsize)
+
+    # only one couple of fsum and gsum polynomials at any time, same for temp
+    # using the biggest size for obvious reasons
+    fsumSize = recTree.num_digits_n + recTree.num_digits_j
+    tempSize = recTree.num_digits_j + recTree.num_digits_nminusj 
     
-
-
     #while root.left != None:
 
 
