@@ -1,4 +1,5 @@
 import math
+from enum import Enum
 
 # Contains the fundamental information needed for each recursive step
 class Node(object):
@@ -16,6 +17,7 @@ class Node(object):
         self.parent = parent
         self.right = None
         self.left = None
+        self.operandSource = "fgsum"
 
         if (parent == None):
             self.depth = 0
@@ -34,15 +36,7 @@ def buildTree(parent, digit_size, ws):
 
     return None
 
+# Determines if a node is a leaf, requiring to "run" the divstep function
+def isLeaf(node):
+    return (node.left == None and node.right == None)
 
-def printTree(root):
-    if(root != None):
-        printTree(root.right)
-        printTree(root.left)
-        print(root.depth)
-    return
-
-
-# def dfs(root):
-#     return root
-    
