@@ -1,56 +1,55 @@
 import treeUtils as tree
+import constants as k
 
 # Assembles the declaration part and the "execution" part
-def assemble(root, pSize, qSize, p_off, q_off, fg_off, fgsumSize, fgsum_off):
+def assemble(root):
     code = ""
-    code+=init(root, pSize, qSize, fgsumSize)
-    code+=unrollTree(root, p_off, q_off, fg_off, fgsum_off)
+    code+=init(root)
+    code+=unrollTree(root)
 
     print(code)
 
-def unrollTree(node, p_off, q_off, fg_off, fgsum_off):
+def unrollTree(node):
     code = ""
-    if(tree.isLeaf(node)):
-        # determining which offset to consider
-        if(node.operandSource == "fgsum"):
-            in_offset = fgsum_off[-1]
-        else:
-            in_offset = fg_off[-1]
+    if(node != None):
+        if(tree.isLeaf(node)):
+            # determining which offset to consider
+            if(node.operandSource == "fgsum"):
+                in_offset = k.fgsum_offset[-1]
+            else:
+                in_offset = k.fg_offset[-1]
 
-        # calling divstep, splitting the cases to store the results in the correct 
-        # arrays (P or Q)
-        if(node == node.parent.right):
-            code+=divstep(node, "p", in_offset, p_off[-1])
-        else:
-            code+=divstep(node, "q", in_offset, q_off[-1])
+            # calling divstep, splitting the cases to store the results in the correct 
+            # arrays (P or Q)
+            if(node == node.parent.right):
+                code+=divstep(node, "p", in_offset, k.p_offset[-1])
+            else:
+                code+=divstep(node, "q", in_offset, k.q_offset[-1])
+            return code
 
-    code+=unrollTree(node.right, p_off, q_off. fg_off. fgsum_off)
-    # calculate operands for the left subtree
+        code+=unrollTree(node.right)
+        # calculate operands for the left subtree
 
-    code+=unrollTree(node.left, p_off, q_off. fg_off. fgsum_off)
-    # recombine the results
-
-
-def divstep(node, resDest, in_off, out_off):
-    
-
+        code+=unrollTree(node.left)
+        # recombine the results
+        return code
 
 # Declaring all the necessary arrays to store the P and Q matrices, intermediate
 # and temporary results and suboperands
-def init(root, pSize, qSize, fgsumSize):
+def init(root):
     code = ""
-    code+="DIGIT p_00[" + str(pSize) +"];\n"
-    code+="DIGIT p_01[" + str(pSize) +"];\n"
-    code+="DIGIT p_10[" + str(pSize) +"];\n"
-    code+="DIGIT p_11[" + str(pSize) +"];\n"
+    code+="DIGIT p_00[" + str(k.psize) +"];\n"
+    code+="DIGIT p_01[" + str(k.psize) +"];\n"
+    code+="DIGIT p_10[" + str(k.psize) +"];\n"
+    code+="DIGIT p_11[" + str(k.psize) +"];\n"
     code+="\n"
-    code+="DIGIT q_00[" + str(qSize) +"];\n"
-    code+="DIGIT q_01[" + str(qSize) +"];\n"
-    code+="DIGIT q_10[" + str(qSize) +"];\n"
-    code+="DIGIT q_11[" + str(qSize) +"];\n"
+    code+="DIGIT q_00[" + str(k.qsize) +"];\n"
+    code+="DIGIT q_01[" + str(k.qsize) +"];\n"
+    code+="DIGIT q_10[" + str(k.qsize) +"];\n"
+    code+="DIGIT q_11[" + str(k.qsize) +"];\n"
     code+="\n"
-    code+="DIGIT  f_sum[" + str(fgsumSize) + "];\n"
-    code+="DIGIT  g_sum[" + str(fgsumSize) + "];\n"
+    code+="DIGIT f_sum[" + str(k.fgsumSize) + "];\n"
+    code+="DIGIT g_sum[" + str(k.fgsumSize) + "];\n"
     code+="\n"
     code+="DIGIT temp[" + str(root.num_digits_j+root.num_digits_nminusj) +"];\n"
     code+="DIGIT buffer[" + str(root.num_digits_j*2) + "];\n"
@@ -63,6 +62,10 @@ def calcFGsum(node, res_off, input_off):
 
 def recombine(node, res_off, input_off):
     pass
+
+
+
+########## GF2X OPERATIONS ##########
 
 # Writes the code for the scalar product between two couples of arrays,
 # eventually using a buffer to have same length operands and guarantee
@@ -112,3 +115,43 @@ def memcpy(dest, src, len):
 # no need to "decompose" it into its parts
 def digit_shift(len, input, amount):
     return "right_bit_shift_wide_n(" + str(len) + ", " + input + ", " + str(amount) + ");\n"
+
+
+
+########## DIVSTEP FUNCTIONS ##########
+
+# Generates the code for the divstep calls
+def divstep(node, resDest, in_off, out_off):
+    if(node.n < 192):
+        return support_jumpdivstep(node, resDest, in_off, out_off)
+    else:
+        return divstepx_256(node, resDest, in_off, out_off)
+
+# Divstep for n < 256
+def divstepx_256(node, resDest, in_off, out_off):
+    return ""
+    pass
+
+# Divstep for n < 192
+def support_jumpdivstep(node, resDest, in_off, out_off):
+    if (node.n < 128):
+        return divstepx_128(node, resDest, in_off, out_off)
+    else:
+        # TODO: do stuff
+        return ""
+        pass
+
+# Divstep for n < 128
+def divstepx_128(node, resDest, in_off, out_off):
+    if(node.n < 64):
+        return divstepx(node, resDest, in_off, out_off)
+    else:
+        # TODO: do stuff
+        return ""
+        pass
+
+# DIvstep for n < 64
+def divstepx(node, resDest, in_off, out_off):
+    #TODO: do stuff
+    return ""
+    pass

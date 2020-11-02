@@ -2,14 +2,7 @@ import os
 import math
 import treeUtils as tree
 import codeBuilder as cb
-
-
-# Constants; the current values apply for for machines allowing all the
-# possible optimizations in terms of AVX instructions (computing 4 DIGITs
-# in parallel)
-DIGIT_SIZE_B = 8
-DIGIT_SIZE_b = DIGIT_SIZE_B << 3
-WS = 256
+import constants as k
 
 
 # Starting from the prime number to treat reconstructs the recursive
@@ -18,10 +11,10 @@ WS = 256
 def generateTree(p):
     n = 2*p-1
 
-    root = tree.Node(n, None, DIGIT_SIZE_b, WS)
-    tree.buildTree(root, DIGIT_SIZE_b, WS)
+    root = tree.Node(n, None, k.DIGIT_SIZE_b, k.WS)
+    tree.buildTree(root, k.DIGIT_SIZE_b, k.WS)
 
-    return root, math.floor(math.log2(n/WS)) + 1
+    return root, math.floor(math.log2(n/k.WS)) + 1
 
 
 # Calculates the offsets for f and g for the rightmost branch of the tree,
@@ -35,7 +28,7 @@ def calculateFGoffsets(node):
         node.operandSource = "input"
         node = node.right
 
-    return off
+    k.fg_offset = off
     
 
 # Calculates the amount of memory to be allocated to store all the P and
@@ -58,8 +51,12 @@ def calculatePQsize(node):
         q_offset.append(qsize)
         qsize+=qtree.num_digits_n
         qtree = qtree.right
+    
+    k.psize = psize
+    k.qsize = qsize
+    k.p_offset = p_offset
+    k.q_offset = q_offset
 
-    return psize, qsize, p_offset, q_offset
 
 # Calculates the amount of memory to be allocated to store all the f_sum and
 # g_sum arrays during the execution and the offsets to access the right portion
@@ -73,7 +70,8 @@ def calculateFGsumSize(node):
         size+=node.left.num_digits_n+node.left.num_digits_j
         node = node.right
     
-    return size, sumOffset
+    k.fgsumSize = size
+    k.fgsum_offset = sumOffset
 
 
 # Calculates all the parameters specific for the given prime p and invokes a method
@@ -83,20 +81,15 @@ def generateSrc(p):
     root, depth = generateTree(p)
 
     # P and Q sizes and access offsets (based on the node depth)
-    pSize, qSize, p_off, q_off = calculatePQsize(root)
-
-    print(p_off, pSize)
-    print(q_off, qSize)
-
-    fg_off = calculateFGoffsets(root)
-    print(fg_off)
+    calculatePQsize(root)
+    calculateFGoffsets(root)
 
     # using a single array for the f_sum and g_sum polynomials, which
     # is split in subarrays like the input polynomials f and g
-    fgsumSize, fgsum_off = calculateFGsumSize(root)
+    calculateFGsumSize(root)
 
 
-    return cb.assemble(root, pSize, qSize, p_off, q_off, fg_off, fgsumSize, fgsum_off)
+    return cb.assemble(root)
 
 
 
