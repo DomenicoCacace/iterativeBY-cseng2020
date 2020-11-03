@@ -15,23 +15,28 @@ def unrollTree(node):
         if(tree.isLeaf(node)):
             # determining which offset to consider
             if(node.operandSource == "fgsum"):
-                in_offset = k.fgsum_offset[-1]
+                f = "f_sum+" + str(k.fgsum_offset[-1])
+                g = "g_sum+" + str(k.fgsum_offset[-1])
             else:
-                in_offset = k.fg_offset[-1]
+                f = "f+" + str(k.fgsum_offset[-1])
+                g = "g+" + str(k.fgsum_offset[-1])
 
             # calling divstep, splitting the cases to store the results in the correct 
             # arrays (P or Q)
             if(node == node.parent.right):
-                code+=divstep(node, "p", in_offset, k.p_offset[-1])
+                code+=divstep(node, "p", f, g, k.p_offset[-1])
             else:
-                code+=divstep(node, "q", in_offset, k.q_offset[-1])
+                code+=divstep(node, "q", f, g, k.q_offset[-1])
             return code
 
         code+=unrollTree(node.right)
         # calculate operands for the left subtree
+        code+=calculateLeftOperands(node)
 
         code+=unrollTree(node.left)
         # recombine the results
+        code+=recombine(node)
+
         return code
 
 # Declaring all the necessary arrays to store the P and Q matrices, intermediate
@@ -55,13 +60,43 @@ def init(root):
     code+="DIGIT buffer[" + str(root.num_digits_j*2) + "];\n"
     return code
 
-def calcFGsum(node, res_off, input_off):
+def calculateLeftOperands(node):
     code = ""
     code+=""
-    pass
+    return code
 
-def recombine(node, res_off, input_off):
-    pass
+def recombine(node):
+    # Recombining the final result
+    if(node.parent == None):
+        resDest = "t"
+        resOff = 0
+        p_off = 0
+        q_off = 0
+    elif(node == node.parent.right):
+        resDest = "p"
+        resOff = k.p_offset[node.depth-1]
+        p_off = k.p_offset[node.depth]
+        q_off = k.q_offset[node.depth]
+    else:
+        resDest = "q"
+        resOff = k.q_offset[node.depth-1]
+        p_off = k.p_offset[node.depth]
+        q_off = k.q_offset[node.depth]
+
+    code = ""
+    if(resOff != 0):
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_00+" + str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_01+" + str(resOff), node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_10+" + str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_11+" + str(resOff), node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
+    else:
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_00", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_01", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_10", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
+        code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_11", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
+
+    
+    return code
 
 
 
@@ -70,7 +105,7 @@ def recombine(node, res_off, input_off):
 # Writes the code for the scalar product between two couples of arrays,
 # eventually using a buffer to have same length operands and guarantee
 #a costant time execution
-def scalarprod(node, nr, res, na, a0, a1, nb, b0, b1):
+def scalarprod(nr, res, na, a0, a1, nb, b0, b1):
     code = ""
     if(na == nb):
         code+=GF2X_MUL(nr, res, na, a0, nb, b0)
@@ -97,7 +132,7 @@ def scalarprod(node, nr, res, na, a0, a1, nb, b0, b1):
 
 # Generates the code for a base multiplication
 def GF2X_MUL(nr, res, na, a, nb, b):
-    return "GF2X_MUL(" + str(nr) + ", " + res + ", " + str(na) + ", " + a + str(nb) + ", " + b + ");\n"
+    return "GF2X_MUL(" + str(nr) + ", " + res + ", " + str(na) + ", " + a + ", " + str(nb) + ", " + b + ");\n"
 
 # Generates the code for a base addition
 def GF2X_ADD(size, res, a0, a1):
@@ -105,11 +140,11 @@ def GF2X_ADD(size, res, a0, a1):
 
 # Generates the code to set the buffer initial values to zero
 def memset(size):
-    return "memset(buffer, 0x00, " + str(size) +" + DIGIT_SIZE_B);\n"
+    return "memset(buffer, 0x00, " + str(size) +"*DIGIT_SIZE_B);\n"
 
 # Generates the code to copy len DIGITs of src to dest
 def memcpy(dest, src, len):
-    return "memcpy(" + dest + ", " + src + ", " + str(len) + " * DIGIT_SIZE_B);\n"
+    return "memcpy(" + dest + ", " + src + ", " + str(len) + "*DIGIT_SIZE_B);\n"
 
 # Generates the code to perform a right shift; the function called is an inline,
 # no need to "decompose" it into its parts
@@ -121,37 +156,58 @@ def digit_shift(len, input, amount):
 ########## DIVSTEP FUNCTIONS ##########
 
 # Generates the code for the divstep calls
-def divstep(node, resDest, in_off, out_off):
+def divstep(node, resDest, f, g, out_off):
     if(node.n < 192):
-        return support_jumpdivstep(node, resDest, in_off, out_off)
+        return support_jumpdivstep(node, resDest, f, g, out_off)
     else:
-        return divstepx_256(node, resDest, in_off, out_off)
+        return divstepsx_256(node, resDest, f, g, out_off)
 
 # Divstep for n < 256
-def divstepx_256(node, resDest, in_off, out_off):
-    return ""
-    pass
+def divstepsx_256(node, resDest, f, g, out_off):
+    if(node.n < 128):
+        return divstepsx_128(node, resDest, f, g, out_off)
+    else:
+        code = ""
+        code += "delta = divstepsx_256(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ");\n"
+        return code
 
 # Divstep for n < 192
-def support_jumpdivstep(node, resDest, in_off, out_off):
+def support_jumpdivstep(node, resDest, f, g, out_off):
     if (node.n < 128):
-        return divstepx_128(node, resDest, in_off, out_off)
+        return divstepsx_128(node, resDest, f, g, out_off)
     else:
-        # TODO: do stuff
-        return ""
-        pass
+        code = ""
+        code += "delta = support_jumpdivstep(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ", 0.5);\n"
+        return code
 
 # Divstep for n < 128
-def divstepx_128(node, resDest, in_off, out_off):
+def divstepsx_128(node, resDest, f, g, out_off):
     if(node.n < 64):
-        return divstepx(node, resDest, in_off, out_off)
+        return divstepsx(node, resDest, f, g, out_off)
     else:
-        # TODO: do stuff
-        return ""
-        pass
+        code = ""
+        code += "delta = divstepsx_128(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ");\n"
+        return  code
 
 # DIvstep for n < 64
-def divstepx(node, resDest, in_off, out_off):
+def divstepsx(node, resDest, f, g, out_off):
     #TODO: do stuff
-    return ""
-    pass
+        code = ""
+        code += "delta = divstepsx(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ");\n"
+        return code
