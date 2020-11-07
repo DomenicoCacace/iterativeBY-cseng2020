@@ -38,15 +38,17 @@ def calculatePQsize(node):
     ptree = node.right
     qtree = node.left
 
-    psize = 0
+    psize = node.num_digits_n
     p_offset = []
+    p_offset.append(0)
     while(ptree != None):
         p_offset.append(psize)
         psize+=ptree.num_digits_n
         ptree = ptree.right
 
-    qsize = 0
+    qsize = node.num_digits_nminusj
     q_offset = []
+    q_offset.append(0)
     while(qtree != None):
         q_offset.append(qsize)
         qsize+=qtree.num_digits_n
@@ -62,14 +64,15 @@ def calculatePQsize(node):
 # g_sum arrays during the execution and the offsets to access the right portion
 # of the arrays for each level of the tree
 def calculateFGsumSize(node):
-    size = 0
+    size = node.num_digits_n+node.num_digits_j
     sumOffset = []
-
+    sumOffset.append(0)
     while(node.left != None):
         sumOffset.append(size)
         size+=node.left.num_digits_n+node.left.num_digits_j
         node = node.right
     
+
     k.fgsumSize = size
     k.fgsum_offset = sumOffset
 
@@ -101,6 +104,10 @@ def main():
     
     for prime in primes:
         code = generateSrc(prime)
+        print(k.fg_offset)
+        print(k.fgsum_offset)
+        print(k.p_offset)
+        print(k.q_offset)
         #f = open("generated_part/" + str(prime) + ".part", "w")
         #f.write(code)
         #f.close()
