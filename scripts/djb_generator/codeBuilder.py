@@ -57,12 +57,35 @@ def init(root):
     code+="DIGIT g_sum[" + str(k.fgsumSize) + "];\n"
     code+="\n"
     code+="DIGIT temp[" + str(root.num_digits_j+root.num_digits_nminusj) +"];\n"
+    code+="DIGIT temp2[" + str(root.num_digits_j+root.num_digits_nminusj) +"];\n"
     code+="DIGIT buffer[" + str(root.num_digits_j*2) + "];\n"
     return code
 
 def calculateLeftOperands(node):
-    code = ""
-    code+=""
+    code = "\n// Calculating left operands: n:" + str(node.n) +", depth: " + str(node.depth) + "\n"
+    if(node.operandSource == "fgsum"):
+        p_off = k.p_offset[node.depth-1]
+        fg_off  = k.fgsum_offset[node.depth-2]
+
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth-1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth-1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+    else:
+        p_off = k.p_offset[node.depth-1]
+        fg_off  = k.fg_offset[node.depth-2]
+        
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("f_sum+"+str(k.fg_offset[node.depth-1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("g_sum+"+str(k.fg_offset[node.depth-1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+
     return code
 
 def recombine(node):
@@ -83,7 +106,7 @@ def recombine(node):
         p_off = k.p_offset[node.depth]
         q_off = k.q_offset[node.depth]
 
-    code = ""
+    code = "\n// Recombining results: n:" + str(node.n) +", depth: " + str(node.depth) + "num digits n, num digits j:" + str(node.num_digits_n) +" " + str(node.num_digits_j) + " " + str(node.num_digits_nminusj) + "\n"
     if(resOff != 0):
         code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_00+" + str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
         code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_01+" + str(resOff), node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
@@ -94,8 +117,6 @@ def recombine(node):
         code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_01", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
         code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_10", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
         code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_11", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
-
-    
     return code
 
 
@@ -157,10 +178,12 @@ def digit_shift(len, input, amount):
 
 # Generates the code for the divstep calls
 def divstep(node, resDest, f, g, out_off):
+    code = "\n"
     if(node.n < 192):
-        return support_jumpdivstep(node, resDest, f, g, out_off)
+        code+=support_jumpdivstep(node, resDest, f, g, out_off)
     else:
-        return divstepsx_256(node, resDest, f, g, out_off)
+        code+=divstepsx_256(node, resDest, f, g, out_off)
+    return code
 
 # Divstep for n < 256
 def divstepsx_256(node, resDest, f, g, out_off):
