@@ -64,9 +64,9 @@ def calculatePQsize(node):
 # g_sum arrays during the execution and the offsets to access the right portion
 # of the arrays for each level of the tree
 def calculateFGsumSize(node):
-    size = node.num_digits_n+node.num_digits_j
+    size = 0
     sumOffset = []
-    sumOffset.append(0)
+
     while(node.left != None):
         sumOffset.append(size)
         size+=node.left.num_digits_n+node.left.num_digits_j
@@ -76,6 +76,19 @@ def calculateFGsumSize(node):
     k.fgsumSize = size
     k.fgsum_offset = sumOffset
 
+
+def setOperandsOffsets(node):
+    if(node == None):
+        return
+    elif(node.parent != None):
+        if(node.parent.right == node):
+            node.inputOffset = node.parent.inputOffset + node.parent.num_digits_n - node.parent.num_digits_j
+        else:
+            node.inputOffset = k.fgsum_offset[node.depth-1]
+    else:
+        pass
+    setOperandsOffsets(node.right)
+    setOperandsOffsets(node.left)
 
 # Calculates all the parameters specific for the given prime p and invokes a method
 # to build the code relative to it
@@ -91,6 +104,7 @@ def generateSrc(p):
     # is split in subarrays like the input polynomials f and g
     calculateFGsumSize(root)
 
+    setOperandsOffsets(root)
 
     return cb.assemble(root)
 

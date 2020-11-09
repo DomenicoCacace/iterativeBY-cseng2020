@@ -15,11 +15,11 @@ def unrollTree(node):
         if(tree.isLeaf(node)):
             # determining which offset to consider
             if(node.operandSource == "fgsum"):
-                f = "f_sum+" + str(k.fgsum_offset[-1])
-                g = "g_sum+" + str(k.fgsum_offset[-1])
+                f = "f_sum+" + str(node.inputOffset)
+                g = "g_sum+" + str(node.inputOffset)
             else:
-                f = "f+" + str(k.fg_offset[-1])
-                g = "g+" + str(k.fg_offset[-1])
+                f = "f+" + str(node.inputOffset)
+                g = "g+" + str(node.inputOffset)
 
             # calling divstep, splitting the cases to store the results in the correct 
             # arrays (P or Q)
@@ -65,7 +65,7 @@ def calculateLeftOperands(node):
     code = "\n// Calculating left operands: n:" + str(node.n) +", depth: " + str(node.depth) + "\n"
     if(node.operandSource == "fgsum"):
         p_off = k.p_offset[node.depth+1]
-        fg_off  = k.fgsum_offset[node.depth]
+        fg_off  = node.inputOffset
 
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
         
@@ -73,31 +73,31 @@ def calculateLeftOperands(node):
 
 
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
-        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth+1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
 
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
         
         code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
 
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
-        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth+1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
     else:
         p_off = k.p_offset[node.depth+1]
-        fg_off  = k.fg_offset[node.depth]
+        fg_off  = node.inputOffset
         
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
 
         code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
 
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
-        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth+1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
 
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
         
         code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
         
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
-        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth+1]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
 
     return code
 

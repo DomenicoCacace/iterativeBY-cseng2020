@@ -18,6 +18,7 @@ class Node(object):
         self.right = None
         self.left = None
         self.operandSource = "fgsum"
+        self.inputOffset = 0
 
         if (parent == None):
             self.depth = 0
