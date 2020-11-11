@@ -71,7 +71,7 @@ def calculateLeftOperands(node):
 
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
         
-        #code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
 
 
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
@@ -79,7 +79,7 @@ def calculateLeftOperands(node):
 
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
         
-        #code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
 
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
         code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
@@ -89,14 +89,14 @@ def calculateLeftOperands(node):
         
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
 
-        #code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
 
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
         code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
 
         code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
         
-        #code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
         
         code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
         code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
@@ -108,8 +108,8 @@ def recombine(node):
     if(node.parent == None):
         resDest = "t"
         resOff = 0
-        p_off = 0
-        q_off = 0
+        p_off = k.p_offset[node.depth+1]
+        q_off = k.q_offset[node.depth+1]
     elif(node == node.parent.right):
         resDest = "p"
         resOff = k.p_offset[node.depth]
@@ -125,16 +125,16 @@ def recombine(node):
     
     code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
     code+=memcpy(resDest + "_00+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n)
-    #code+="print_pol(" + resDest + "_00+" + str(resOff) + ", \"t00\", " + str(node.num_digits_n) +");\n"
+    code+="print_pol(" + resDest + "_00+" + str(resOff) + ", \"t00\", " + str(node.num_digits_n) +");\n"
     code+=scalarprod(node.num_digits_nminusj + node.num_digits_j,"recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
     code+=memcpy(resDest + "_01+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n) 
-    #code+="print_pol(" + resDest + "_01+" + str(resOff) + ", \"t01\", " + str(node.num_digits_n) +");\n"
+    code+="print_pol(" + resDest + "_01+" + str(resOff) + ", \"t01\", " + str(node.num_digits_n) +");\n"
     code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
     code+=memcpy(resDest + "_10+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n)
-    #code+="print_pol(" + resDest + "_10+" + str(resOff) + ", \"t10\", " + str(node.num_digits_n) +");\n"
+    code+="print_pol(" + resDest + "_10+" + str(resOff) + ", \"t10\", " + str(node.num_digits_n) +");\n"
     code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
     code+=memcpy(resDest + "_11+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n)
-    #code+="print_pol(" + resDest + "_11+" + str(resOff) + ", \"t11\", " + str(node.num_digits_n) +");\n"
+    code+="print_pol(" + resDest + "_11+" + str(resOff) + ", \"t11\", " + str(node.num_digits_n) +");\n"
 
     
     return code
@@ -148,10 +148,10 @@ def recombine(node):
 #a costant time execution
 def scalarprod(nr, res, na, a0, a1, nb, b0, b1):
     code = ""
-    code+="print_pol(" + a0 +", \"a0\", " + str(na) + ");\n"
-    code+="print_pol(" + a1 +", \"a1\", " + str(na) + ");\n"
-    code+="print_pol(" + b0 +", \"b0\", " + str(nb) + ");\n"
-    code+="print_pol(" + b1 +", \"b1\", " + str(nb) + ");\n"
+    #code+="print_pol(" + a0 +", \"a0\", " + str(na) + ");\n"
+    #code+="print_pol(" + a1 +", \"a1\", " + str(na) + ");\n"
+    #code+="print_pol(" + b0 +", \"b0\", " + str(nb) + ");\n"
+    #code+="print_pol(" + b1 +", \"b1\", " + str(nb) + ");\n"
 
     if(na == nb):
         code+=GF2X_MUL(nr, res, na, a0, nb, b0)
