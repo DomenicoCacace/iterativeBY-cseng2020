@@ -1,6 +1,7 @@
 # Machine-related the current values apply for for machines allowing all the
 # possible optimizations in terms of AVX instructions (computing 4 DIGITs
 # in parallel)
+# TODO: generalize to allow the code to be architecture-independent
 DIGIT_SIZE_B = 8
 DIGIT_SIZE_b = DIGIT_SIZE_B << 3
 WS = 256

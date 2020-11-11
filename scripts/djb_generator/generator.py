@@ -1,131 +1,255 @@
-import os
-import math
 import treeUtils as tree
-import codeBuilder as cb
 import constants as k
 
+# Assembles the declaration part and the "execution" part
+def assemble(root):
+    code = ""
+    code+=init(root)
+    code+=unrollTree(root)
+    code+="return delta;\n"
 
-# Starting from the prime number to treat reconstructs the recursive
-# calls tree, using the buildTree function
-# returns the tree root and its depth (the root is not included in the count)
-def generateTree(p):
-    n = 2*p-1
+    print(code)
 
-    root = tree.Node(n, None, k.DIGIT_SIZE_b, k.WS)
-    tree.buildTree(root, k.DIGIT_SIZE_b, k.WS)
+def unrollTree(node):
+    code = ""
+    if(node != None):
+        if(tree.isLeaf(node)):
+            # determining which offset to consider
+            if(node.operandSource == "fgsum"):
+                f = "f_sum+" + str(node.inputOffset)
+                g = "g_sum+" + str(node.inputOffset)
+            else:
+                f = "f+" + str(node.inputOffset)
+                g = "g+" + str(node.inputOffset)
 
-    return root, math.floor(math.log2(n/k.WS)) + 1
+            # calling divstep, splitting the cases to store the results in the correct 
+            # arrays (P or Q)
+            if(node == node.parent.right):
+                code+=divstep(node, "p", f, g, k.p_offset[node.depth])
+            else:
+                code+=divstep(node, "q", f, g, k.q_offset[node.depth])
+            return code
 
+        code+=unrollTree(node.right)
+        # calculate operands for the left subtree
+        code+=calculateLeftOperands(node)
 
-# Calculates the offsets for f and g for the rightmost branch of the tree,
-# changing the operandSource attribute of those nodes
-def calculateFGoffsets(node):
-    off = []
-    sum = 0
-    while (node != None):
-        off.append(sum)
-        sum+=(node.num_digits_n - node.num_digits_j)
-        node.operandSource = "input"
-        node = node.right
+        code+=unrollTree(node.left)
+        # recombine the results
+        code+=recombine(node)
 
-    k.fg_offset = off
+        return code
+
+# Declaring all the necessary arrays to store the P and Q matrices, intermediate
+# and temporary results and suboperands
+def init(root):
+    code = ""
+    code+="DIGIT p_00[" + str(k.psize) +"];\n"
+    code+="DIGIT p_01[" + str(k.psize) +"];\n"
+    code+="DIGIT p_10[" + str(k.psize) +"];\n"
+    code+="DIGIT p_11[" + str(k.psize) +"];\n"
+    code+="\n"
+    code+="DIGIT q_00[" + str(k.qsize) +"];\n"
+    code+="DIGIT q_01[" + str(k.qsize) +"];\n"
+    code+="DIGIT q_10[" + str(k.qsize) +"];\n"
+    code+="DIGIT q_11[" + str(k.qsize) +"];\n"
+    code+="\n"
+    code+="DIGIT f_sum[" + str(k.fgsumSize) + "];\n"
+    code+="DIGIT g_sum[" + str(k.fgsumSize) + "];\n"
+    code+="\n"
+
+    # TODO: adjust sizes
+    code+="DIGIT temp[" + str(k.psize) +"];\n"
+    code+="DIGIT recombine[" + str(root.num_digits_j*2) + "];\n"    # to be removed
+    code+="DIGIT temp2[" + str(k.psize) +"];\n"
+    code+="DIGIT buffer[" + str(root.num_digits_j*2) + "];\n"
+    return code
+
+def calculateLeftOperands(node):
+    code = "\n// Calculating left operands: n:" + str(node.n) +", depth: " + str(node.depth) + "\n"
+    fg_off  = node.inputOffset
+    p_off = k.p_offset[node.depth+1]
+
+    if(node.operandSource == "fgsum"):
+        # f_sum
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
+        #code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+        
+        # g_sum
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off))
+        #code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+    else:       # using f and g to calculate f_sum and g_sum        
+        # f_sum
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
+        #code+="print_pol(temp2, \"f_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("f_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+        
+        # g_sum
+        code+=scalarprod(node.num_digits_n + node.num_digits_j, "temp2", node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off))
+        #code+="print_pol(temp2, \"g_sum\", " + str(node.num_digits_j+node.num_digits_n) + ");\n"
+        code+=digit_shift(node.num_digits_n+node.num_digits_j, "temp2", node.j)
+        code+=memcpy("g_sum+"+str(k.fgsum_offset[node.depth]), "temp2+" + str(node.num_digits_n + node.num_digits_j - node.num_digits_nminusj), node.num_digits_n)
+
+    return code
+
+def recombine(node):
+    # Recombining the final result
+
+    if(node.parent == None):    # final recombine, results are stored in the t_xy arrays 
+        resDest = "t"
+        resOff = 0
+    elif(node == node.parent.right):    # the node is a right child, storing the results in p_xy
+        resDest = "p"
+        resOff = k.p_offset[node.depth]
+    else:   # left child, storing results in q_xy
+        resDest = "q"
+        resOff = k.q_offset[node.depth]
+
+    # operands sources
+    p_off = k.p_offset[node.depth+1]
+    q_off = k.q_offset[node.depth+1]
+
+    code = "\n// Recombining results: n:" + str(node.n) +", depth: " + str(node.depth) + "num digits n, num digits j:" + str(node.num_digits_n) +" " + str(node.num_digits_j) + " " + str(node.num_digits_nminusj) + "\n"
     
-
-# Calculates the amount of memory to be allocated to store all the P and
-# Q matrices during the execution and the offsets to access the right portion
-# of the matrices for each level of the tree
-def calculatePQsize(node):
-    ptree = node.right
-    qtree = node.left
-
-    psize = node.num_digits_n
-    p_offset = []
-    p_offset.append(0)
-    while(ptree != None):
-        p_offset.append(psize)
-        psize+=ptree.num_digits_n
-        ptree = ptree.right
-
-    qsize = node.num_digits_nminusj
-    q_offset = []
-    q_offset.append(0)
-    while(qtree != None):
-        q_offset.append(qsize)
-        qsize+=qtree.num_digits_n
-        qtree = qtree.right
+    code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
+    code+=memcpy(resDest + "_00+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n)
+    #code+="print_pol(" + resDest + "_00+" + str(resOff) + ", \"t00\", " + str(node.num_digits_n) +");\n"
     
-    k.psize = psize
-    k.qsize = qsize
-    k.p_offset = p_offset
-    k.q_offset = q_offset
-
-
-# Calculates the amount of memory to be allocated to store all the f_sum and
-# g_sum arrays during the execution and the offsets to access the right portion
-# of the arrays for each level of the tree
-def calculateFGsumSize(node):
-    size = 0
-    sumOffset = []
-
-    while(node.left != None):
-        sumOffset.append(size)
-        size+=node.left.num_digits_n+node.left.num_digits_j
-        node = node.right
+    code+=scalarprod(node.num_digits_nminusj + node.num_digits_j,"recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off))
+    code+=memcpy(resDest + "_01+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n) 
+    #code+="print_pol(" + resDest + "_01+" + str(resOff) + ", \"t01\", " + str(node.num_digits_n) +");\n"
     
+    code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
+    code+=memcpy(resDest + "_10+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n)
+    #code+="print_pol(" + resDest + "_10+" + str(resOff) + ", \"t10\", " + str(node.num_digits_n) +");\n"
+    
+    code+=scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off))
+    code+=memcpy(resDest + "_11+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n)
+    #code+="print_pol(" + resDest + "_11+" + str(resOff) + ", \"t11\", " + str(node.num_digits_n) +");\n"
+    
+    return code
 
-    k.fgsumSize = size
-    k.fgsum_offset = sumOffset
 
 
-def setOperandsOffsets(node):
-    if(node == None):
-        return
-    elif(node.parent != None):
-        if(node.parent.right == node):
-            node.inputOffset = node.parent.inputOffset + node.parent.num_digits_n - node.parent.num_digits_j
-        else:
-            node.inputOffset = k.fgsum_offset[node.depth-1]
+########## GF2X OPERATIONS ##########
+
+# Writes the code for the scalar product between two couples of arrays,
+# eventually using a buffer to have same length operands and guarantee
+#a costant time execution
+def scalarprod(nr, res, na, a0, a1, nb, b0, b1):
+    code = ""
+    #code+="print_pol(" + a0 +", \"a0\", " + str(na) + ");\n"
+    #code+="print_pol(" + a1 +", \"a1\", " + str(na) + ");\n"
+    #code+="print_pol(" + b0 +", \"b0\", " + str(nb) + ");\n"
+    #code+="print_pol(" + b1 +", \"b1\", " + str(nb) + ");\n"
+
+    if(na == nb):
+        code+=GF2X_MUL(nr, res, na, a0, nb, b0)
+        code+=GF2X_MUL(nr, "temp", na, a1, nb, b1)
+        code+=GF2X_ADD(nr, res, "temp", res)
+    elif(na > nb):
+        code+=memset(na-nb)
+        code+=memcpy("buffer+" + str(na-nb),  b0, nb)
+        code+=GF2X_MUL(na*2, res, na, a0, na, "buffer")
+        code+=memcpy("buffer+" + str(na-nb),  b1, nb)
+        code+=GF2X_MUL(na*2, "temp", na, a1, na, "buffer")
+        code+=GF2X_ADD(na*2, "temp", res, "temp")
+        code+=memcpy(res, "temp+" + str(na-nb), nr)
     else:
-        pass
-    setOperandsOffsets(node.right)
-    setOperandsOffsets(node.left)
-
-# Calculates all the parameters specific for the given prime p and invokes a method
-# to build the code relative to it
-def generateSrc(p):
+        code+=memset(nb-na)
+        code+=memcpy("buffer+" + str(nb-na),  a0, na)
+        code+=GF2X_MUL(nb*2, res, nb, "buffer", nb, b0)
+        code+=memcpy("buffer+" + str(nb-na),  a1, na)
+        code+=GF2X_MUL(nb*2, "temp", nb, "buffer", nb, b1)
+        code+=GF2X_ADD(nb*2, "temp", res, "temp")
+        code+=memcpy(res, "temp+" + str(nb-na), nr)
     
-    root, depth = generateTree(p)
+    return code
 
-    # P and Q sizes and access offsets (based on the node depth)
-    calculatePQsize(root)
-    calculateFGoffsets(root)
+# Generates the code for a base multiplication
+def GF2X_MUL(nr, res, na, a, nb, b):
+    return "GF2X_MUL(" + str(nr) + ", " + res + ", " + str(na) + ", " + a + ", " + str(nb) + ", " + b + ");\n"
 
-    # using a single array for the f_sum and g_sum polynomials, which
-    # is split in subarrays like the input polynomials f and g
-    calculateFGsumSize(root)
+# Generates the code for a base addition
+def GF2X_ADD(size, res, a0, a1):
+    return "gf2x_add(" + str(size) + ", " + res + ", " + str(size) + ", " + a0 + ", " + str(size) + ", " + a1 + ");\n"
 
-    setOperandsOffsets(root)
+# Generates the code to set the buffer initial values to zero
+def memset(size):
+    return "memset(buffer, 0x00, " + str(size) +"*DIGIT_SIZE_B);\n"
 
-    return cb.assemble(root)
+# Generates the code to copy len DIGITs of src to dest
+def memcpy(dest, src, len):
+    return "memcpy(" + dest + ", " + src + ", " + str(len) + "*DIGIT_SIZE_B);\n"
+
+# Generates the code to perform a right shift; the function called is an inline,
+# no need to "decompose" it into its parts
+def digit_shift(len, input, amount):
+    return "right_bit_shift_wide_n(" + str(len) + ", " + input + ", " + str(amount) + ");\n"
 
 
 
-# Builds the source code for each prime and writes it to single files, then assembles the files
-# into a final one 
-def main():
-    primes = [7187]
-    #primes = [7187, 8237, 10853, 13109, 13397, 15331, 16067, 16229, 19709, 20981, 21611, 22901, 23371, 25579, 28277, 28411, 30803, 35117, 35507, 36629, 40787, 42677, 48371, 52667, 58171, 61717, 83579] 
-    
-    for prime in primes:
-        code = generateSrc(prime)
-        print(k.fg_offset)
-        print(k.fgsum_offset)
-        print(k.p_offset)
-        print(k.q_offset)
-        #f = open("generated_part/" + str(prime) + ".part", "w")
-        #f.write(code)
-        #f.close()
+########## DIVSTEP FUNCTIONS ##########
 
-if __name__ == "__main__":
-    main()
-    
+# Generates the code for the divstep calls
+def divstep(node, resDest, f, g, out_off):
+    code = "\n"
+    if(node.n < 192):
+        code+=support_jumpdivstep(node, resDest, f, g, out_off)
+    else:
+        code+=divstepsx_256(node, resDest, f, g, out_off)
+    return code
+
+# Divstep for n < 256
+def divstepsx_256(node, resDest, f, g, out_off):
+    if(node.n < 128):
+        return divstepsx_128(node, resDest, f, g, out_off)
+    else:
+        code = ""
+        code += "delta = divstepsx_256(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ");\n"
+        return code
+
+# Divstep for n < 192
+def support_jumpdivstep(node, resDest, f, g, out_off):
+    if (node.n < 128):
+        return divstepsx_128(node, resDest, f, g, out_off)
+    else:
+        code = ""
+        code += "delta = support_jumpdivstep(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ", x);\n"
+        return code
+
+# Divstep for n < 128
+def divstepsx_128(node, resDest, f, g, out_off):
+    if(node.n < 64):
+        return divstepsx(node, resDest, f, g, out_off)
+    else:
+        code = ""
+        code += "delta = divstepsx_128(" + str(node.n) + ", delta, " + f +", " + g + ", "
+        code += resDest + "_00+" + str(out_off) + ", "
+        code += resDest + "_01+" + str(out_off) + ", "
+        code += resDest + "_10+" + str(out_off) + ", "
+        code += resDest + "_11+" + str(out_off) + ");\n"
+        return  code
+
+# DIvstep for n < 64
+def divstepsx(node, resDest, f, g, out_off):
+    code = ""
+    code += "delta = divstepsx(" + str(node.n) + ", delta, " + f +", " + g + ", "
+    code += resDest + "_00+" + str(out_off) + ", "
+    code += resDest + "_01+" + str(out_off) + ", "
+    code += resDest + "_10+" + str(out_off) + ", "
+    code += resDest + "_11+" + str(out_off) + ");\n"
+    return code
