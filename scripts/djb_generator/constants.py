@@ -18,3 +18,15 @@ fgsum_offset = []
 
 # f and g offsets
 fg_offset = []
+
+def resetConstants():
+    global qsize, psize, fgsumSize
+    psize = 0
+    qsize = 0
+    fgsumSize = 0
+
+    global p_offset, q_offset, fgsum_offset, fg_offset
+    p_offset.clear()
+    q_offset.clear()
+    fgsum_offset.clear()
+    fg_offset.clear()
