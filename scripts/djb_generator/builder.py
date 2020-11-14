@@ -36,25 +36,21 @@ def calculateFGoffsets(node):
 # of the matrices for each level of the tree
 # TODO: fix, first element can be removed; indexes should be changed too
 def calculatePQsize(node):
-    ptree = node.right
-    qtree = node.left
-
-    psize = node.num_digits_n
+    psize = 0
+    qsize = 0
     p_offset = []
-    p_offset.append(0)
-    while(ptree != None):
-        p_offset.append(psize)
-        psize+=ptree.num_digits_n
-        ptree = ptree.right
-
-    qsize = node.num_digits_nminusj
     q_offset = []
+    p_offset.append(0)
     q_offset.append(0)
-    while(qtree != None):
+
+    while(node.left != None):
+        qsize+=node.left.num_digits_n
+        psize+=node.right.num_digits_n
+        p_offset.append(psize)
         q_offset.append(qsize)
-        qsize+=qtree.num_digits_n
-        qtree = qtree.right
-    
+
+        node = node.right
+
     k.psize = psize
     k.qsize = qsize
     k.p_offset = p_offset
@@ -70,7 +66,7 @@ def calculateFGsumSize(node):
 
     while(node.left != None):
         sumOffset.append(size)
-        size+=node.left.num_digits_n+node.left.num_digits_j
+        size+=node.num_digits_n+node.num_digits_j
         node = node.right
     
     k.fgsumSize = size
@@ -105,8 +101,9 @@ def generateSrc(p):
     calculateFGsumSize(root)
 
     setOperandsOffsets(root)
+    print(root.num_digits_n)
 
-    return gen.assemble(root)
+    return gen.assemble(root, p)
 
 
 
@@ -114,18 +111,17 @@ def generateSrc(p):
 # into a final one 
 # TODO: assemble files 
 def main():
-    primes = [7187]
+    primes = [7187, 8237, 10853]
+    outputPath = "/home/d0m/Documents/iterativeBY-cseng2020/src/inverse/library/djb_support/"
     #primes = [7187, 8237, 10853, 13109, 13397, 15331, 16067, 16229, 19709, 20981, 21611, 22901, 23371, 25579, 28277, 28411, 30803, 35117, 35507, 36629, 40787, 42677, 48371, 52667, 58171, 61717, 83579] 
-    
     for prime in primes:
+        k.resetConstants()
         code = generateSrc(prime)
-        print(k.fg_offset)
-        print(k.fgsum_offset)
-        print(k.p_offset)
-        print(k.q_offset)
-        #f = open("generated_part/" + str(prime) + ".part", "w")
-        #f.write(code)
-        #f.close()
+        f = open(outputPath + "jumpdivstep_" + str(prime) + ".c", "w")
+        f.write(code)
+        f.close()
+    
+
 
 if __name__ == "__main__":
     main()
