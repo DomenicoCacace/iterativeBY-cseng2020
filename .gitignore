@@ -58,3 +58,5 @@ dkms.conf
 # Build files
 src/benchmarking/build/
 src/benchmarking/.build/
+
+scripts/djb_generator/__pycache__/

@@ -17,4 +17,4 @@ then
     cmake ../../ -DMODE=FULL_TIMING
 fi
 
-make -j 20
+make -j 12
