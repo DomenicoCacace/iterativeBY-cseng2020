@@ -42,6 +42,9 @@ def assemble(root, p):
     output+="#include \"inverse_DJB_facilities.c\"\n\n"
     output+="int inverse_DJB_" + str(p) + "(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, DIGIT *t_01, DIGIT *t_10, DIGIT *t_11, float x) {\n"
     for line in code:
+        if(not k.debug):
+            if line.startswith("print_pol"):
+                continue
         output+="\t" + str(line) + "\n"
     output+="}"
 
@@ -157,19 +160,19 @@ def recombine(node):
     
     code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
     code.append(memcpy(resDest + "_00+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
-    code.append(print_pol(resDest+"_00"+str(resOff), "t00", node.num_digits_n))
+    code.append(print_pol(resDest+"_00+"+str(resOff), "t00", node.num_digits_n))
     
     code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j,"recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
     code.append(memcpy(resDest + "_01+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n) )
-    code.append(print_pol(resDest+"_01"+str(resOff), "t01", node.num_digits_n))
+    code.append(print_pol(resDest+"_01+"+str(resOff), "t01", node.num_digits_n))
     
     code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
     code.append(memcpy(resDest + "_10+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
-    code.append(print_pol(resDest+"_10"+str(resOff), "t10", node.num_digits_n))
+    code.append(print_pol(resDest+"_10+"+str(resOff), "t10", node.num_digits_n))
     
     code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
     code.append(memcpy(resDest + "_11+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
-    code.append(print_pol(resDest+"_11"+str(resOff), "t11", node.num_digits_n))
+    code.append(print_pol(resDest+"_11+"+str(resOff), "t11", node.num_digits_n))
     
     return code
 

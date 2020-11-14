@@ -6,6 +6,8 @@ DIGIT_SIZE_B = 8
 DIGIT_SIZE_b = DIGIT_SIZE_B << 3
 WS = 256
 
+debug = False
+
 # P and Q sizes and offsets
 psize = 0
 qsize = 0

@@ -101,7 +101,6 @@ def generateSrc(p):
     calculateFGsumSize(root)
 
     setOperandsOffsets(root)
-    print(root.num_digits_n)
 
     return gen.assemble(root, p)
 
@@ -111,9 +110,9 @@ def generateSrc(p):
 # into a final one 
 # TODO: assemble files 
 def main():
-    primes = [7187, 8237, 10853]
+    #primes = [7187, 8237, 10853]
     outputPath = "/home/d0m/Documents/iterativeBY-cseng2020/src/inverse/library/djb_support/"
-    #primes = [7187, 8237, 10853, 13109, 13397, 15331, 16067, 16229, 19709, 20981, 21611, 22901, 23371, 25579, 28277, 28411, 30803, 35117, 35507, 36629, 40787, 42677, 48371, 52667, 58171, 61717, 83579] 
+    primes = [7187, 8237, 10853, 13109, 13397, 15331, 16067, 16229, 19709, 20981, 21611, 22901, 23371, 25579, 28277, 28411, 30803, 35117, 35507, 36629, 40787, 42677, 48371, 52667, 58171, 61717, 83579] 
     for prime in primes:
         k.resetConstants()
         code = generateSrc(prime)
