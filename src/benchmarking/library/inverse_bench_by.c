@@ -1,17 +1,11 @@
 #include <inttypes.h>
-#include <limits.h>
-#include <stddef.h>
 #include <stdio.h>
-#include <stdalign.h>
-#include <alloca.h>
 
 #include "../../gf2x/include/gf2x_limbs.h"
 #include "../../gf2x/include/gf2x_arith_mod_xPplusOne.h"
-#include "../../common/include/architecture_detect.h"
 #include "../../common/include/timing_and_stats.h"
 #include "../include/testing_facilities.h"
 
-#include <string.h>
 
 /*************************************************************************/
 

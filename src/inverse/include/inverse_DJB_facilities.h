@@ -2,8 +2,7 @@
  * Software Artifact of the paper A Comprehensive Analysis of Constant-time
  * Polynomial Inversion for Post-quantum Cryptosystems
  *
- * @author Alessandro Barenghi <alessandro.barenghi@polimi.it>
- * @author Gerardo Pelosi <gerardo.pelosi@polimi.it>
+ * @author Domenico Cacace <domenico.cacace@mail.polimi.it>
  *
  * This code is hereby placed in the public domain.
  *
@@ -21,7 +20,22 @@
  *
  **/
 
-#pragma once
-#include "inverse_DJB_specific.h"
+#include <string.h>
+#include "../../gf2x/include/gf2x_limbs.h"
+#include "../../gf2x/include/gf2x_arith.h"
+#include "../../gf2x/include/gf2x_arith_mod_xPplusOne.h"
+#include "../../benchmarking/include/testing_facilities.h"
+#include "../../common/include/architecture_detect.h"
 
-int inverse_DJB(DIGIT out[], const DIGIT in[], float x);
+
+#pragma once
+
+void gf2x_scalarprod(int nr, DIGIT Res[], int na, DIGIT a0[], DIGIT a1[], int nb, DIGIT b0[], DIGIT b1[]);
+
+int divstepsx(int n, int delta, DIGIT f64, DIGIT g64, DIGIT *p00, DIGIT *p01, DIGIT *p10, DIGIT *p11);
+
+int divstepsx_128(int n, int delta, DIGIT f[], DIGIT g[], DIGIT *p00, DIGIT *p01, DIGIT *p10, DIGIT *p11);
+
+int divstepsx_256(int n, int delta, DIGIT f[], DIGIT g[], DIGIT *p00, DIGIT *p01, DIGIT *p10, DIGIT *p11);
+
+int support_jumpdivstep(int n, int delta, int nf, DIGIT f[], DIGIT g[], DIGIT t00[], DIGIT t01[], DIGIT t10[], DIGIT t11[], float x);

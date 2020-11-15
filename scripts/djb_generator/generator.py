@@ -39,8 +39,8 @@ def assemble(root, p):
     code.extend(unrollTree(root))
     code.append("return delta;")
 
-    output+="#include \"inverse_DJB_facilities.c\"\n\n"
-    output+="int inverse_DJB_" + str(p) + "(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, DIGIT *t_01, DIGIT *t_10, DIGIT *t_11, float x) {\n"
+    output+="#include \"../../include/inverse_DJB_facilities.h\"\n\n"
+    output+="int jumpdivstep_" + str(p) + "(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, DIGIT *t_01, DIGIT *t_10, DIGIT *t_11, float x) {\n"
     for line in code:
         if(not k.debug):
             if line.startswith("print_pol"):

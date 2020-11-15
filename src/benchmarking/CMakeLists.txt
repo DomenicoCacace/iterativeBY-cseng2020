@@ -20,17 +20,20 @@ set(HEADERS ${BASE_DIR}/gf2x/include/gf2x_limbs.h
             ${BASE_DIR}/common/include/architecture_detect.h
             ${BASE_DIR}/common/include/timing_and_stats.h
             ${BASE_DIR}/inverse/include/inverse_exp.h
-            ${BASE_DIR}/inverse/include/inverse_DJB.h)
+            ${BASE_DIR}/inverse/include/inverse_DJB.h
+            ${BASE_DIR}/inverse/include/inverse_DJB_specific.h
+            ${BASE_DIR}/inverse/include/inverse_DJB_facilities.h)
 
 set(SOURCES ${BASE_DIR}/gf2x/library/gf2x_arith.c
             ${BASE_DIR}/gf2x/library/gf2x_arith_mod_xPplusOne.c
             ${BASE_DIR}/inverse/library/inverse_exp.c
-            ${BASE_DIR}/inverse/library/inverse_DJB.c)
+            ${BASE_DIR}/inverse/library/inverse_DJB.c
+            ${BASE_DIR}/inverse/library/djb_support/inverse_DJB_facilities.c)
 
 # Current primes in the specification
 list(APPEND PRIME_LIST
  7187
- 8237
+8237
 10853
 13109
 13397
@@ -90,11 +93,14 @@ math(EXPR count_primes "${count_primes}-1")
 
 foreach(i RANGE ${count_primes})
     list(GET PRIME_LIST ${i} prime)
+
+    set(JDS_SOURCE ${BASE_DIR}/inverse/library/djb_support/jumpdivstep_${prime}.c)
+    list(APPEND SOURCES ${JDS_SOURCE})
     
     if ("${MODE}" STREQUAL "FULL_TIMING")
         add_executable(inverse_bench_full_${prime} ${HEADERS} ${SOURCES} ${BASE_DIR}/benchmarking/library/inverse_bench_full.c)
         target_link_libraries(inverse_bench_full_${prime} m)
-        set_property(TARGET inverse_bench_full_${prime} APPEND PROPERTY COMPILE_FLAGS "-DCPU_WORD_BITS=64 -DP=${prime}")
+        set_property(TARGET inverse_bench_full_${prime} APPEND PROPERTY COMPILE_FLAGS "-DCPU_WORD_BITS=64 -DP=${prime} -D")
     elseif("${MODE}" STREQUAL "BY_TIMING")
         add_executable(inverse_bench_by_${prime} ${HEADERS} ${SOURCES} ${BASE_DIR}/benchmarking/library/inverse_bench_by.c)
         target_link_libraries(inverse_bench_by_${prime} m)
@@ -104,5 +110,8 @@ foreach(i RANGE ${count_primes})
         target_link_libraries(functional_test_${prime} m)
         set_property(TARGET functional_test_${prime} APPEND PROPERTY COMPILE_FLAGS "-DCPU_WORD_BITS=64 -DP=${prime}")
     endif()
+
+    list(REMOVE_ITEM SOURCES ${JDS_SOURCE})
+
 endforeach(i RANGE ${count_primes})
     
