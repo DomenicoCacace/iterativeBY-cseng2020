@@ -108,7 +108,6 @@ def generateSrc(p):
 
 # Builds the source code for each prime and writes it to single files, then assembles the files
 # into a final one 
-# TODO: assemble files 
 def main():
     #primes = [7187, 8237, 10853]
     outputPath = "/home/d0m/Documents/iterativeBY-cseng2020/src/inverse/library/djb_support/"
