@@ -156,22 +156,34 @@ def recombine(node):
 
     code = []
     code.append("// Recombining results: n: " + str(node.n) +", depth: " + str(node.depth))
-    
-    code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
-    code.append(memcpy(resDest + "_00+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
+    if (node.num_digits_nminusj+node.num_digits_j-node.num_digits_n == 0):
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_00+" + str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
+        
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_01+" + str(resOff), node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
+        
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_10+" + str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
+        
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, resDest + "_11+" + str(resOff), node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
+    else:
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
+        code.append(memcpy(resDest + "_00+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
+        
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j,"recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
+        code.append(memcpy(resDest + "_01+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n) )
+        
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
+        code.append(memcpy(resDest + "_10+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
+        
+        code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
+        code.append(memcpy(resDest + "_11+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
+
     code.append(print_pol(resDest+"_00+"+str(resOff), "t00", node.num_digits_n))
-    
-    code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j,"recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_00+" + str(q_off), "q_01+" + str(q_off)))
-    code.append(memcpy(resDest + "_01+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n) )
     code.append(print_pol(resDest+"_01+"+str(resOff), "t01", node.num_digits_n))
-    
-    code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_00+" + str(p_off), "p_10+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
-    code.append(memcpy(resDest + "_10+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
     code.append(print_pol(resDest+"_10+"+str(resOff), "t10", node.num_digits_n))
-    
-    code.extend(scalarprod(node.num_digits_nminusj + node.num_digits_j, "recombine", node.num_digits_j, "p_01+" + str(p_off), "p_11+" + str(p_off), node.num_digits_nminusj, "q_10+" + str(q_off), "q_11+" + str(q_off)))
-    code.append(memcpy(resDest + "_11+" + str(resOff), "recombine+" + str(node.num_digits_nminusj+node.num_digits_j-node.num_digits_n), node.num_digits_n))
     code.append(print_pol(resDest+"_11+"+str(resOff), "t11", node.num_digits_n))
+
+
+
     
     code.append("\n")
     return code
@@ -189,15 +201,17 @@ def scalarprod(nr, res, na, a0, a1, nb, b0, b1):
     #code.append("print_pol(" + b0 +", \"b0\", " + str(nb) + ");")
     #code.append("print_pol(" + b1 +", \"b1\", " + str(nb) + ");")
    
-    if(na > nb):
-        code.append(memset(res, nr-2*nb))
+    if(na > nb):        
+        if (nr - 2*nb > 0):
+            code.append(memset(res, nr-2*nb))
         code.append(GF2X_MUL(2*nb, "temp", nb, a0+"+"+str(na-nb), nb, b0))
         code.append(GF2X_MUL(2*nb, "temp2", nb, a1+"+"+str(na-nb), nb, b1))
         code.append(GF2X_ADD(2*nb, res+"+"+str(nr-2*nb), "temp", "temp2"))
         na-=nb
         nr-=nb
     else:
-        code.append(memset(res, nr-2*na))
+        if (nr - 2*na > 0):
+            code.append(memset(res, nr-2*na))
         code.append(GF2X_MUL(2*na, "temp", na, b0+"+"+str(nb-na), na, a0))
         code.append(GF2X_MUL(2*na, "temp2", na, b1+"+"+str(nb-na), na, a1))
         code.append(GF2X_ADD(2*na, res+"+"+str(nr-2*na), "temp", "temp2"))
