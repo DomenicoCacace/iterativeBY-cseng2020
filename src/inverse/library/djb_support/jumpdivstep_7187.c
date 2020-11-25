@@ -35,40 +35,37 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	DIGIT q_10[222];
 	DIGIT q_11[222];
 	
-	DIGIT f_sum[693];
-	DIGIT g_sum[693];
+	DIGIT f_sum[700];
+	DIGIT g_sum[700];
 	
 	DIGIT temp[456];
-	DIGIT recombine[456];
 	DIGIT temp2[456];
 	
 
 	delta = divstepsx_256(255, delta, f+221, g+221, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
+	// Digits to shift: 3
+	// Displacement: 4
 	GF2X_MUL(8, temp, 4, f+217+4, 4, p_00+232);
 	GF2X_MUL(8, temp2, 4, g+217+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
 	GF2X_MUL(8, temp, 4, f+217+0, 4, p_00+232);
 	GF2X_MUL(8, temp2, 4, g+217+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
 	GF2X_MUL(8, temp, 4, f+217+4, 4, p_10+232);
 	GF2X_MUL(8, temp2, 4, g+217+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
 	GF2X_MUL(8, temp, 4, f+217+0, 4, p_10+232);
 	GF2X_MUL(8, temp2, 4, g+217+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -86,54 +83,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
+	// Digits to shift: 7
+	// Displacement: 8
 	GF2X_MUL(16, temp, 8, f+209+8, 8, p_00+224);
 	GF2X_MUL(16, temp2, 8, g+209+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
 	GF2X_MUL(16, temp, 8, f+209+0, 8, p_00+224);
 	GF2X_MUL(16, temp2, 8, g+209+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
 	GF2X_MUL(16, temp, 8, f+209+8, 8, p_10+224);
 	GF2X_MUL(16, temp2, 8, g+209+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
 	GF2X_MUL(16, temp, 8, f+209+0, 8, p_10+224);
 	GF2X_MUL(16, temp2, 8, g+209+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -166,54 +159,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 2040, depth: 3
-	memset(recombine, 0x00, 16*DIGIT_SIZE_B);
+	// Digits to shift: 15
+	// Displacement: 16
 	GF2X_MUL(32, temp, 16, f+193+16, 16, p_00+208);
 	GF2X_MUL(32, temp2, 16, g+193+16, 16, p_01+208);
-	gf2x_add(32, recombine+16, 32, temp, 32, temp2);
+	gf2x_add(32, f_sum+612+0, 32, temp, 32, temp2);
 	GF2X_MUL(32, temp, 16, f+193+0, 16, p_00+208);
 	GF2X_MUL(32, temp2, 16, g+193+0, 16, p_01+208);
 	gf2x_add(32, temp, 32, temp, 32, temp2);
-	gf2x_add(32, recombine+0, 32, recombine+0, 32, temp);
-	right_bit_shift_wide_n(48, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 32*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 16*DIGIT_SIZE_B);
+	gf2x_add(16, f_sum+612, 16, f_sum+612, 16, temp+16);
+	right_bit_shift_n(32, f_sum+612, 60);
 	GF2X_MUL(32, temp, 16, f+193+16, 16, p_10+208);
 	GF2X_MUL(32, temp2, 16, g+193+16, 16, p_11+208);
-	gf2x_add(32, recombine+16, 32, temp, 32, temp2);
+	gf2x_add(32, g_sum+612+0, 32, temp, 32, temp2);
 	GF2X_MUL(32, temp, 16, f+193+0, 16, p_10+208);
 	GF2X_MUL(32, temp2, 16, g+193+0, 16, p_11+208);
 	gf2x_add(32, temp, 32, temp, 32, temp2);
-	gf2x_add(32, recombine+0, 32, recombine+0, 32, temp);
-	right_bit_shift_wide_n(48, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 32*DIGIT_SIZE_B);
+	gf2x_add(16, g_sum+612, 16, g_sum+612, 16, temp+16);
+	right_bit_shift_n(32, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+625, g_sum+625, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+621+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+621+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+621+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+621+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+621+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+621+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+621+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+621+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -231,54 +220,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+609+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+613+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+609+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+613+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -326,110 +311,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 3825, depth: 2
-	memset(recombine, 0x00, 28*DIGIT_SIZE_B);
+	// Digits to shift: 31
+	// Displacement: 32
 	GF2X_MUL(64, temp, 32, f+165+28, 32, p_00+176);
 	GF2X_MUL(64, temp2, 32, g+165+28, 32, p_01+176);
-	gf2x_add(64, recombine+28, 64, temp, 64, temp2);
+	gf2x_add(60, f_sum+519, 60, temp+4, 60, temp2+4);
 	GF2X_MUL(56, temp, 28, p_00+176+4, 28, f+165);
 	GF2X_MUL(56, temp2, 28, p_01+176+4, 28, g+165);
 	gf2x_add(56, temp, 56, temp, 56, temp2);
-	gf2x_add(56, recombine+4, 56, recombine+4, 56, temp);
-	GF2X_MUL(8, temp, 4, f+165+24, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+24, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+24, 8, recombine+24, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+20, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+20, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+20, 8, recombine+20, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+16, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+16, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+16, 8, recombine+16, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+12, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+12, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+12, 8, recombine+12, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+8, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+8, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+4, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+4, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+0, 4, p_00+176);
-	GF2X_MUL(8, temp2, 4, g+165+0, 4, p_01+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(92, recombine, 2040);
-	memcpy(f_sum+517, recombine+64, 60*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 28*DIGIT_SIZE_B);
+	gf2x_add(28, f_sum+519, 28, f_sum+519, 28, temp+28);
+	right_bit_shift_n(60, f_sum+519, 56);
 	GF2X_MUL(64, temp, 32, f+165+28, 32, p_10+176);
 	GF2X_MUL(64, temp2, 32, g+165+28, 32, p_11+176);
-	gf2x_add(64, recombine+28, 64, temp, 64, temp2);
+	gf2x_add(60, g_sum+519, 60, temp+4, 60, temp2+4);
 	GF2X_MUL(56, temp, 28, p_10+176+4, 28, f+165);
 	GF2X_MUL(56, temp2, 28, p_11+176+4, 28, g+165);
 	gf2x_add(56, temp, 56, temp, 56, temp2);
-	gf2x_add(56, recombine+4, 56, recombine+4, 56, temp);
-	GF2X_MUL(8, temp, 4, f+165+24, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+24, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+24, 8, recombine+24, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+20, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+20, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+20, 8, recombine+20, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+16, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+16, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+16, 8, recombine+16, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+12, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+12, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+12, 8, recombine+12, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+8, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+8, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+4, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+4, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f+165+0, 4, p_10+176);
-	GF2X_MUL(8, temp2, 4, g+165+0, 4, p_11+176);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(92, recombine, 2040);
-	memcpy(g_sum+517, recombine+64, 60*DIGIT_SIZE_B);
+	gf2x_add(28, g_sum+519, 28, g_sum+519, 28, temp+28);
+	right_bit_shift_n(60, g_sum+519, 56);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+541, g_sum+541, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+544, g_sum+544, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+537+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+537+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+540+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+540+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+537+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+537+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+540+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+540+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -447,54 +372,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+529+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+529+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+532+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+532+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+529+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+529+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+532+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+532+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -527,78 +448,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1785, depth: 3
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+12, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+12, 16, p_01+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+517);
-	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+517);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+520+12, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+12, 16, p_01+208);
+	gf2x_add(28, f_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+520);
+	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+520);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+8, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+8, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+4, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+4, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+0, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+0, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 28*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+12, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+12, 16, p_11+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+517);
-	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+517);
+	gf2x_add(12, f_sum+612, 12, f_sum+612, 12, temp+12);
+	right_bit_shift_n(28, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+520+12, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+12, 16, p_11+208);
+	gf2x_add(28, g_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+520);
+	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+520);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+8, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+8, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+4, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+4, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+0, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+0, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 28*DIGIT_SIZE_B);
+	gf2x_add(12, g_sum+612, 12, g_sum+612, 12, temp+12);
+	right_bit_shift_n(28, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+617, g_sum+617, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -616,37 +509,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 765, depth: 4
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_01+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_01+224);
+	gf2x_add(12, f_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_00+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_01+224);
+	gf2x_add(4, f_sum+661, 4, f_sum+661, 4, temp+4);
+	right_bit_shift_n(12, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_11+224);
+	gf2x_add(12, g_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 12*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_11+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+609);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_10+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_11+224);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 12*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+661, 4, g_sum+661, 4, temp+4);
+	right_bit_shift_n(12, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_256(255, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 765, depth: 4
 	memset(q_00+194, 0x00, 4*DIGIT_SIZE_B);
@@ -882,166 +765,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 7395, depth: 1
-	memset(recombine, 0x00, 56*DIGIT_SIZE_B);
+	// Digits to shift: 59
+	// Displacement: 60
 	GF2X_MUL(120, temp, 60, f+109+56, 60, p_00+116);
 	GF2X_MUL(120, temp2, 60, g+109+56, 60, p_01+116);
-	gf2x_add(120, recombine+56, 120, temp, 120, temp2);
+	gf2x_add(116, f_sum+342, 116, temp+4, 116, temp2+4);
 	GF2X_MUL(112, temp, 56, p_00+116+4, 56, f+109);
 	GF2X_MUL(112, temp2, 56, p_01+116+4, 56, g+109);
 	gf2x_add(112, temp, 112, temp, 112, temp2);
-	gf2x_add(112, recombine+4, 112, recombine+4, 112, temp);
-	GF2X_MUL(8, temp, 4, f+109+52, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+52, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+52, 8, recombine+52, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+48, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+48, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+48, 8, recombine+48, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+44, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+44, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+44, 8, recombine+44, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+40, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+40, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+40, 8, recombine+40, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+36, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+36, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+36, 8, recombine+36, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+32, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+32, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+32, 8, recombine+32, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+28, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+28, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+28, 8, recombine+28, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+24, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+24, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+24, 8, recombine+24, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+20, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+20, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+20, 8, recombine+20, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+16, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+16, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+16, 8, recombine+16, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+12, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+12, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+12, 8, recombine+12, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+8, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+8, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+4, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+4, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+0, 4, p_00+116);
-	GF2X_MUL(8, temp2, 4, g+109+0, 4, p_01+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(176, recombine, 3825);
-	memcpy(f_sum+341, recombine+120, 116*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 56*DIGIT_SIZE_B);
+	gf2x_add(56, f_sum+342, 56, f_sum+342, 56, temp+56);
+	right_bit_shift_n(116, f_sum+342, 49);
 	GF2X_MUL(120, temp, 60, f+109+56, 60, p_10+116);
 	GF2X_MUL(120, temp2, 60, g+109+56, 60, p_11+116);
-	gf2x_add(120, recombine+56, 120, temp, 120, temp2);
+	gf2x_add(116, g_sum+342, 116, temp+4, 116, temp2+4);
 	GF2X_MUL(112, temp, 56, p_10+116+4, 56, f+109);
 	GF2X_MUL(112, temp2, 56, p_11+116+4, 56, g+109);
 	gf2x_add(112, temp, 112, temp, 112, temp2);
-	gf2x_add(112, recombine+4, 112, recombine+4, 112, temp);
-	GF2X_MUL(8, temp, 4, f+109+52, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+52, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+52, 8, recombine+52, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+48, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+48, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+48, 8, recombine+48, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+44, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+44, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+44, 8, recombine+44, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+40, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+40, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+40, 8, recombine+40, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+36, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+36, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+36, 8, recombine+36, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+32, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+32, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+32, 8, recombine+32, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+28, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+28, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+28, 8, recombine+28, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+24, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+24, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+24, 8, recombine+24, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+20, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+20, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+20, 8, recombine+20, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+16, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+16, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+16, 8, recombine+16, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+12, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+12, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+12, 8, recombine+12, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+8, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+8, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+4, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+4, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f+109+0, 4, p_10+116);
-	GF2X_MUL(8, temp2, 4, g+109+0, 4, p_11+116);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(176, recombine, 3825);
-	memcpy(g_sum+341, recombine+120, 116*DIGIT_SIZE_B);
+	gf2x_add(56, g_sum+342, 56, g_sum+342, 56, temp+56);
+	right_bit_shift_n(116, g_sum+342, 49);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+393, g_sum+393, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+395, g_sum+395, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+389+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+389+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+389+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+389+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+391+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+391+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+391+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+391+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+389+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+389+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+389+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+389+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+391+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+391+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+391+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+391+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -1059,54 +826,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+381+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+381+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+381+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+381+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+383+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+383+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+383+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+383+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+381+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+381+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+381+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+381+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+383+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+383+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+383+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+383+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -1139,78 +902,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1785, depth: 3
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+369+12, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+369+12, 16, p_01+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+369);
-	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+369);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+371+12, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+371+12, 16, p_01+208);
+	gf2x_add(28, f_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+371);
+	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+371);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+369+8, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+369+8, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+369+4, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+369+4, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+369+0, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+369+0, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 28*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+369+12, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+369+12, 16, p_11+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+369);
-	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+369);
+	gf2x_add(12, f_sum+612, 12, f_sum+612, 12, temp+12);
+	right_bit_shift_n(28, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+371+12, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+371+12, 16, p_11+208);
+	gf2x_add(28, g_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+371);
+	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+371);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+369+8, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+369+8, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+369+4, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+369+4, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+369+0, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+369+0, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 28*DIGIT_SIZE_B);
+	gf2x_add(12, g_sum+612, 12, g_sum+612, 12, temp+12);
+	right_bit_shift_n(28, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+617, g_sum+617, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -1228,37 +963,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 765, depth: 4
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_01+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_01+224);
+	gf2x_add(12, f_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_00+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_01+224);
+	gf2x_add(4, f_sum+661, 4, f_sum+661, 4, temp+4);
+	right_bit_shift_n(12, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_11+224);
+	gf2x_add(12, g_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 12*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_11+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+609);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_10+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_11+224);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 12*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+661, 4, g_sum+661, 4, temp+4);
+	right_bit_shift_n(12, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_256(255, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 765, depth: 4
 	memset(q_00+194, 0x00, 4*DIGIT_SIZE_B);
@@ -1363,54 +1088,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 3570, depth: 2
-	memset(recombine, 0x00, 28*DIGIT_SIZE_B);
-	GF2X_MUL(56, temp, 28, f_sum+341+28, 28, p_00+176);
-	GF2X_MUL(56, temp2, 28, g_sum+341+28, 28, p_01+176);
-	gf2x_add(56, recombine+28, 56, temp, 56, temp2);
-	GF2X_MUL(56, temp, 28, f_sum+341+0, 28, p_00+176);
-	GF2X_MUL(56, temp2, 28, g_sum+341+0, 28, p_01+176);
+	// Digits to shift: 27
+	// Displacement: 28
+	GF2X_MUL(56, temp, 28, f_sum+343+28, 28, p_00+176);
+	GF2X_MUL(56, temp2, 28, g_sum+343+28, 28, p_01+176);
+	gf2x_add(56, f_sum+519+0, 56, temp, 56, temp2);
+	GF2X_MUL(56, temp, 28, f_sum+343+0, 28, p_00+176);
+	GF2X_MUL(56, temp2, 28, g_sum+343+0, 28, p_01+176);
 	gf2x_add(56, temp, 56, temp, 56, temp2);
-	gf2x_add(56, recombine+0, 56, recombine+0, 56, temp);
-	right_bit_shift_wide_n(84, recombine, 1785);
-	memcpy(f_sum+517, recombine+56, 56*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 28*DIGIT_SIZE_B);
-	GF2X_MUL(56, temp, 28, f_sum+341+28, 28, p_10+176);
-	GF2X_MUL(56, temp2, 28, g_sum+341+28, 28, p_11+176);
-	gf2x_add(56, recombine+28, 56, temp, 56, temp2);
-	GF2X_MUL(56, temp, 28, f_sum+341+0, 28, p_10+176);
-	GF2X_MUL(56, temp2, 28, g_sum+341+0, 28, p_11+176);
+	gf2x_add(28, f_sum+519, 28, f_sum+519, 28, temp+28);
+	right_bit_shift_n(56, f_sum+519, 57);
+	GF2X_MUL(56, temp, 28, f_sum+343+28, 28, p_10+176);
+	GF2X_MUL(56, temp2, 28, g_sum+343+28, 28, p_11+176);
+	gf2x_add(56, g_sum+519+0, 56, temp, 56, temp2);
+	GF2X_MUL(56, temp, 28, f_sum+343+0, 28, p_10+176);
+	GF2X_MUL(56, temp2, 28, g_sum+343+0, 28, p_11+176);
 	gf2x_add(56, temp, 56, temp, 56, temp2);
-	gf2x_add(56, recombine+0, 56, recombine+0, 56, temp);
-	right_bit_shift_wide_n(84, recombine, 1785);
-	memcpy(g_sum+517, recombine+56, 56*DIGIT_SIZE_B);
+	gf2x_add(28, g_sum+519, 28, g_sum+519, 28, temp+28);
+	right_bit_shift_n(56, g_sum+519, 57);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+541, g_sum+541, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+544, g_sum+544, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+537+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+537+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+540+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+540+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+537+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+537+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+540+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+540+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -1428,54 +1149,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+529+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+529+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+532+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+532+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+529+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+529+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+532+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+532+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -1508,78 +1225,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1785, depth: 3
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+12, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+12, 16, p_01+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+517);
-	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+517);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+520+12, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+12, 16, p_01+208);
+	gf2x_add(28, f_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+520);
+	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+520);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+8, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+8, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+4, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+4, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+0, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+0, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 28*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+12, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+12, 16, p_11+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+517);
-	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+517);
+	gf2x_add(12, f_sum+612, 12, f_sum+612, 12, temp+12);
+	right_bit_shift_n(28, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+520+12, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+12, 16, p_11+208);
+	gf2x_add(28, g_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+520);
+	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+520);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+8, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+8, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+4, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+4, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+0, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+0, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 28*DIGIT_SIZE_B);
+	gf2x_add(12, g_sum+612, 12, g_sum+612, 12, temp+12);
+	right_bit_shift_n(28, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+617, g_sum+617, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -1597,37 +1286,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 765, depth: 4
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_01+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_01+224);
+	gf2x_add(12, f_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_00+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_01+224);
+	gf2x_add(4, f_sum+661, 4, f_sum+661, 4, temp+4);
+	right_bit_shift_n(12, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_11+224);
+	gf2x_add(12, g_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 12*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_11+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+609);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_10+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_11+224);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 12*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+661, 4, g_sum+661, 4, temp+4);
+	right_bit_shift_n(12, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_256(255, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 765, depth: 4
 	memset(q_00+194, 0x00, 4*DIGIT_SIZE_B);
@@ -1990,214 +1669,58 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 14373, depth: 0
-	memset(recombine, 0x00, 109*DIGIT_SIZE_B);
+	// Digits to shift: 115
+	// Displacement: 115
 	GF2X_MUL(232, temp, 116, f+0+109, 116, p_00+0);
 	GF2X_MUL(232, temp2, 116, g+0+109, 116, p_01+0);
-	gf2x_add(232, recombine+109, 232, temp, 232, temp2);
+	gf2x_add(226, f_sum+0, 226, temp+6, 226, temp2+6);
 	GF2X_MUL(218, temp, 109, p_00+0+7, 109, f+0);
 	GF2X_MUL(218, temp2, 109, p_01+0+7, 109, g+0);
 	gf2x_add(218, temp, 218, temp, 218, temp2);
-	gf2x_add(218, recombine+7, 218, recombine+7, 218, temp);
+	gf2x_add(110, f_sum+0, 110, f_sum+0, 110, temp+108);
 	GF2X_MUL(14, temp, 7, f+0+102, 7, p_00+0);
 	GF2X_MUL(14, temp2, 7, g+0+102, 7, p_01+0);
 	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+102, 14, recombine+102, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+95, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+95, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+95, 14, recombine+95, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+88, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+88, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+88, 14, recombine+88, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+81, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+81, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+81, 14, recombine+81, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+74, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+74, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+74, 14, recombine+74, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+67, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+67, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+67, 14, recombine+67, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+60, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+60, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+60, 14, recombine+60, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+53, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+53, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+53, 14, recombine+53, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+46, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+46, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+46, 14, recombine+46, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+39, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+39, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+39, 14, recombine+39, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+32, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+32, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+32, 14, recombine+32, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+25, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+25, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+25, 14, recombine+25, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+18, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+18, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+18, 14, recombine+18, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+11, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+11, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+11, 14, recombine+11, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+4, 7, p_00+0);
-	GF2X_MUL(14, temp2, 7, g+0+4, 7, p_01+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+4, 14, recombine+4, 14, temp);
-	GF2X_MUL(8, temp, 4, p_00+0+3, 4, f+0);
-	GF2X_MUL(8, temp2, 4, p_01+0+3, 4, g+0);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+3, 8, recombine+3, 8, temp);
-	GF2X_MUL(6, temp, 3, f+0+1, 3, p_00+0);
-	GF2X_MUL(6, temp2, 3, g+0+1, 3, p_01+0);
-	gf2x_add(6, temp, 6, temp, 6, temp2);
-	gf2x_add(6, recombine+1, 6, recombine+1, 6, temp);
-	GF2X_MUL(2, temp, 1, p_00+0+2, 1, f+0);
-	GF2X_MUL(2, temp2, 1, p_01+0+2, 1, g+0);
-	gf2x_add(2, temp, 2, temp, 2, temp2);
-	gf2x_add(2, recombine+2, 2, recombine+2, 2, temp);
-	GF2X_MUL(2, temp, 1, p_00+0+1, 1, f+0);
-	GF2X_MUL(2, temp2, 1, p_01+0+1, 1, g+0);
-	gf2x_add(2, temp, 2, temp, 2, temp2);
-	gf2x_add(2, recombine+1, 2, recombine+1, 2, temp);
-	GF2X_MUL(2, temp, 1, f+0+0, 1, p_00+0);
-	GF2X_MUL(2, temp2, 1, g+0+0, 1, p_01+0);
-	gf2x_add(2, temp, 2, temp, 2, temp2);
-	gf2x_add(2, recombine+0, 2, recombine+0, 2, temp);
-	right_bit_shift_wide_n(341, recombine, 7395);
-	memcpy(f_sum+0, recombine+231, 225*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 109*DIGIT_SIZE_B);
+	gf2x_add(1, f_sum+0, 1, f_sum+0, 1, temp+13);
+	right_bit_shift_n(225, f_sum+0, 35);
 	GF2X_MUL(232, temp, 116, f+0+109, 116, p_10+0);
 	GF2X_MUL(232, temp2, 116, g+0+109, 116, p_11+0);
-	gf2x_add(232, recombine+109, 232, temp, 232, temp2);
+	gf2x_add(226, g_sum+0, 226, temp+6, 226, temp2+6);
 	GF2X_MUL(218, temp, 109, p_10+0+7, 109, f+0);
 	GF2X_MUL(218, temp2, 109, p_11+0+7, 109, g+0);
 	gf2x_add(218, temp, 218, temp, 218, temp2);
-	gf2x_add(218, recombine+7, 218, recombine+7, 218, temp);
+	gf2x_add(110, g_sum+0, 110, g_sum+0, 110, temp+108);
 	GF2X_MUL(14, temp, 7, f+0+102, 7, p_10+0);
 	GF2X_MUL(14, temp2, 7, g+0+102, 7, p_11+0);
 	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+102, 14, recombine+102, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+95, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+95, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+95, 14, recombine+95, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+88, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+88, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+88, 14, recombine+88, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+81, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+81, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+81, 14, recombine+81, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+74, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+74, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+74, 14, recombine+74, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+67, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+67, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+67, 14, recombine+67, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+60, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+60, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+60, 14, recombine+60, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+53, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+53, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+53, 14, recombine+53, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+46, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+46, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+46, 14, recombine+46, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+39, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+39, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+39, 14, recombine+39, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+32, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+32, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+32, 14, recombine+32, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+25, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+25, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+25, 14, recombine+25, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+18, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+18, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+18, 14, recombine+18, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+11, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+11, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+11, 14, recombine+11, 14, temp);
-	GF2X_MUL(14, temp, 7, f+0+4, 7, p_10+0);
-	GF2X_MUL(14, temp2, 7, g+0+4, 7, p_11+0);
-	gf2x_add(14, temp, 14, temp, 14, temp2);
-	gf2x_add(14, recombine+4, 14, recombine+4, 14, temp);
-	GF2X_MUL(8, temp, 4, p_10+0+3, 4, f+0);
-	GF2X_MUL(8, temp2, 4, p_11+0+3, 4, g+0);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+3, 8, recombine+3, 8, temp);
-	GF2X_MUL(6, temp, 3, f+0+1, 3, p_10+0);
-	GF2X_MUL(6, temp2, 3, g+0+1, 3, p_11+0);
-	gf2x_add(6, temp, 6, temp, 6, temp2);
-	gf2x_add(6, recombine+1, 6, recombine+1, 6, temp);
-	GF2X_MUL(2, temp, 1, p_10+0+2, 1, f+0);
-	GF2X_MUL(2, temp2, 1, p_11+0+2, 1, g+0);
-	gf2x_add(2, temp, 2, temp, 2, temp2);
-	gf2x_add(2, recombine+2, 2, recombine+2, 2, temp);
-	GF2X_MUL(2, temp, 1, p_10+0+1, 1, f+0);
-	GF2X_MUL(2, temp2, 1, p_11+0+1, 1, g+0);
-	gf2x_add(2, temp, 2, temp, 2, temp2);
-	gf2x_add(2, recombine+1, 2, recombine+1, 2, temp);
-	GF2X_MUL(2, temp, 1, f+0+0, 1, p_10+0);
-	GF2X_MUL(2, temp2, 1, g+0+0, 1, p_11+0);
-	gf2x_add(2, temp, 2, temp, 2, temp2);
-	gf2x_add(2, recombine+0, 2, recombine+0, 2, temp);
-	right_bit_shift_wide_n(341, recombine, 7395);
-	memcpy(g_sum+0, recombine+231, 225*DIGIT_SIZE_B);
+	gf2x_add(1, g_sum+0, 1, g_sum+0, 1, temp+13);
+	right_bit_shift_n(225, g_sum+0, 35);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+106, g_sum+106, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+107, g_sum+107, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+102+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+102+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+102+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+102+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+103+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+103+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+103+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+103+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+102+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+102+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+102+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+102+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+103+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+103+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+103+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+103+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -2215,54 +1738,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+94+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+94+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+94+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+94+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+95+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+95+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+95+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+95+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+94+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+94+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+94+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+94+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+95+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+95+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+95+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+95+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -2295,78 +1814,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1785, depth: 3
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+82+12, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+82+12, 16, p_01+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+82);
-	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+82);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+83+12, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+83+12, 16, p_01+208);
+	gf2x_add(28, f_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+83);
+	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+83);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+82+8, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+82+8, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+82+4, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+82+4, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+82+0, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+82+0, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 28*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+82+12, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+82+12, 16, p_11+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+82);
-	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+82);
+	gf2x_add(12, f_sum+612, 12, f_sum+612, 12, temp+12);
+	right_bit_shift_n(28, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+83+12, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+83+12, 16, p_11+208);
+	gf2x_add(28, g_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+83);
+	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+83);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+82+8, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+82+8, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+82+4, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+82+4, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+82+0, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+82+0, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 28*DIGIT_SIZE_B);
+	gf2x_add(12, g_sum+612, 12, g_sum+612, 12, temp+12);
+	right_bit_shift_n(28, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+617, g_sum+617, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -2384,37 +1875,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 765, depth: 4
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_01+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_01+224);
+	gf2x_add(12, f_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_00+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_01+224);
+	gf2x_add(4, f_sum+661, 4, f_sum+661, 4, temp+4);
+	right_bit_shift_n(12, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_11+224);
+	gf2x_add(12, g_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 12*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_11+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+609);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_10+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_11+224);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 12*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+661, 4, g_sum+661, 4, temp+4);
+	right_bit_shift_n(12, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_256(255, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 765, depth: 4
 	memset(q_00+194, 0x00, 4*DIGIT_SIZE_B);
@@ -2519,54 +2000,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 3570, depth: 2
-	memset(recombine, 0x00, 28*DIGIT_SIZE_B);
-	GF2X_MUL(56, temp, 28, f_sum+54+28, 28, p_00+176);
-	GF2X_MUL(56, temp2, 28, g_sum+54+28, 28, p_01+176);
-	gf2x_add(56, recombine+28, 56, temp, 56, temp2);
-	GF2X_MUL(56, temp, 28, f_sum+54+0, 28, p_00+176);
-	GF2X_MUL(56, temp2, 28, g_sum+54+0, 28, p_01+176);
+	// Digits to shift: 27
+	// Displacement: 28
+	GF2X_MUL(56, temp, 28, f_sum+55+28, 28, p_00+176);
+	GF2X_MUL(56, temp2, 28, g_sum+55+28, 28, p_01+176);
+	gf2x_add(56, f_sum+519+0, 56, temp, 56, temp2);
+	GF2X_MUL(56, temp, 28, f_sum+55+0, 28, p_00+176);
+	GF2X_MUL(56, temp2, 28, g_sum+55+0, 28, p_01+176);
 	gf2x_add(56, temp, 56, temp, 56, temp2);
-	gf2x_add(56, recombine+0, 56, recombine+0, 56, temp);
-	right_bit_shift_wide_n(84, recombine, 1785);
-	memcpy(f_sum+517, recombine+56, 56*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 28*DIGIT_SIZE_B);
-	GF2X_MUL(56, temp, 28, f_sum+54+28, 28, p_10+176);
-	GF2X_MUL(56, temp2, 28, g_sum+54+28, 28, p_11+176);
-	gf2x_add(56, recombine+28, 56, temp, 56, temp2);
-	GF2X_MUL(56, temp, 28, f_sum+54+0, 28, p_10+176);
-	GF2X_MUL(56, temp2, 28, g_sum+54+0, 28, p_11+176);
+	gf2x_add(28, f_sum+519, 28, f_sum+519, 28, temp+28);
+	right_bit_shift_n(56, f_sum+519, 57);
+	GF2X_MUL(56, temp, 28, f_sum+55+28, 28, p_10+176);
+	GF2X_MUL(56, temp2, 28, g_sum+55+28, 28, p_11+176);
+	gf2x_add(56, g_sum+519+0, 56, temp, 56, temp2);
+	GF2X_MUL(56, temp, 28, f_sum+55+0, 28, p_10+176);
+	GF2X_MUL(56, temp2, 28, g_sum+55+0, 28, p_11+176);
 	gf2x_add(56, temp, 56, temp, 56, temp2);
-	gf2x_add(56, recombine+0, 56, recombine+0, 56, temp);
-	right_bit_shift_wide_n(84, recombine, 1785);
-	memcpy(g_sum+517, recombine+56, 56*DIGIT_SIZE_B);
+	gf2x_add(28, g_sum+519, 28, g_sum+519, 28, temp+28);
+	right_bit_shift_n(56, g_sum+519, 57);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+541, g_sum+541, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+544, g_sum+544, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+537+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+537+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+540+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+540+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+537+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+537+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+537+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+540+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+540+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+540+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -2584,54 +2061,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+529+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+529+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+532+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+532+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+529+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+529+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+529+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+532+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+532+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+532+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -2664,78 +2137,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1785, depth: 3
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+12, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+12, 16, p_01+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+517);
-	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+517);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+520+12, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+12, 16, p_01+208);
+	gf2x_add(28, f_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+520);
+	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+520);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+8, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+8, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+4, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+4, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+0, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+0, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 28*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+12, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+12, 16, p_11+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+517);
-	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+517);
+	gf2x_add(12, f_sum+612, 12, f_sum+612, 12, temp+12);
+	right_bit_shift_n(28, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+520+12, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+12, 16, p_11+208);
+	gf2x_add(28, g_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+520);
+	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+520);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+8, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+8, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+4, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+4, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+517+0, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+517+0, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 28*DIGIT_SIZE_B);
+	gf2x_add(12, g_sum+612, 12, g_sum+612, 12, temp+12);
+	right_bit_shift_n(28, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+617, g_sum+617, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -2753,37 +2198,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 765, depth: 4
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_01+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_01+224);
+	gf2x_add(12, f_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_00+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_01+224);
+	gf2x_add(4, f_sum+661, 4, f_sum+661, 4, temp+4);
+	right_bit_shift_n(12, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_11+224);
+	gf2x_add(12, g_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 12*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_11+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+609);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_10+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_11+224);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 12*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+661, 4, g_sum+661, 4, temp+4);
+	right_bit_shift_n(12, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_256(255, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 765, depth: 4
 	memset(q_00+194, 0x00, 4*DIGIT_SIZE_B);
@@ -2903,270 +2338,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 6978, depth: 1
-	memset(recombine, 0x00, 54*DIGIT_SIZE_B);
-	GF2X_MUL(112, temp, 56, f_sum+0+54, 56, p_00+116);
-	GF2X_MUL(112, temp2, 56, g_sum+0+54, 56, p_01+116);
-	gf2x_add(112, recombine+54, 112, temp, 112, temp2);
-	GF2X_MUL(108, temp, 54, p_00+116+2, 54, f_sum+0);
-	GF2X_MUL(108, temp2, 54, p_01+116+2, 54, g_sum+0);
+	// Digits to shift: 55
+	// Displacement: 56
+	GF2X_MUL(112, temp, 56, f_sum+1+54, 56, p_00+116);
+	GF2X_MUL(112, temp2, 56, g_sum+1+54, 56, p_01+116);
+	gf2x_add(110, f_sum+342, 110, temp+2, 110, temp2+2);
+	GF2X_MUL(108, temp, 54, p_00+116+2, 54, f_sum+1);
+	GF2X_MUL(108, temp2, 54, p_01+116+2, 54, g_sum+1);
 	gf2x_add(108, temp, 108, temp, 108, temp2);
-	gf2x_add(108, recombine+2, 108, recombine+2, 108, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+52, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+52, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+52, 4, recombine+52, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+50, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+50, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+50, 4, recombine+50, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+48, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+48, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+48, 4, recombine+48, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+46, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+46, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+46, 4, recombine+46, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+44, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+44, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+44, 4, recombine+44, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+42, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+42, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+42, 4, recombine+42, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+40, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+40, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+40, 4, recombine+40, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+38, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+38, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+38, 4, recombine+38, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+36, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+36, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+36, 4, recombine+36, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+34, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+34, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+34, 4, recombine+34, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+32, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+32, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+32, 4, recombine+32, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+30, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+30, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+30, 4, recombine+30, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+28, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+28, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+28, 4, recombine+28, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+26, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+26, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+26, 4, recombine+26, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+24, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+24, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+24, 4, recombine+24, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+22, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+22, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+22, 4, recombine+22, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+20, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+20, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+20, 4, recombine+20, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+18, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+18, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+18, 4, recombine+18, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+16, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+16, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+16, 4, recombine+16, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+14, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+14, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+14, 4, recombine+14, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+12, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+12, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+12, 4, recombine+12, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+10, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+10, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+10, 4, recombine+10, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+8, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+8, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+8, 4, recombine+8, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+6, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+6, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+6, 4, recombine+6, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+4, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+4, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+4, 4, recombine+4, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+2, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+2, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+0, 2, p_00+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+0, 2, p_01+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(166, recombine, 3570);
-	memcpy(f_sum+341, recombine+112, 110*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 54*DIGIT_SIZE_B);
-	GF2X_MUL(112, temp, 56, f_sum+0+54, 56, p_10+116);
-	GF2X_MUL(112, temp2, 56, g_sum+0+54, 56, p_11+116);
-	gf2x_add(112, recombine+54, 112, temp, 112, temp2);
-	GF2X_MUL(108, temp, 54, p_10+116+2, 54, f_sum+0);
-	GF2X_MUL(108, temp2, 54, p_11+116+2, 54, g_sum+0);
+	gf2x_add(54, f_sum+342, 54, f_sum+342, 54, temp+54);
+	right_bit_shift_n(110, f_sum+342, 50);
+	GF2X_MUL(112, temp, 56, f_sum+1+54, 56, p_10+116);
+	GF2X_MUL(112, temp2, 56, g_sum+1+54, 56, p_11+116);
+	gf2x_add(110, g_sum+342, 110, temp+2, 110, temp2+2);
+	GF2X_MUL(108, temp, 54, p_10+116+2, 54, f_sum+1);
+	GF2X_MUL(108, temp2, 54, p_11+116+2, 54, g_sum+1);
 	gf2x_add(108, temp, 108, temp, 108, temp2);
-	gf2x_add(108, recombine+2, 108, recombine+2, 108, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+52, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+52, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+52, 4, recombine+52, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+50, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+50, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+50, 4, recombine+50, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+48, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+48, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+48, 4, recombine+48, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+46, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+46, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+46, 4, recombine+46, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+44, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+44, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+44, 4, recombine+44, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+42, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+42, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+42, 4, recombine+42, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+40, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+40, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+40, 4, recombine+40, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+38, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+38, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+38, 4, recombine+38, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+36, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+36, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+36, 4, recombine+36, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+34, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+34, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+34, 4, recombine+34, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+32, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+32, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+32, 4, recombine+32, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+30, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+30, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+30, 4, recombine+30, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+28, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+28, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+28, 4, recombine+28, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+26, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+26, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+26, 4, recombine+26, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+24, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+24, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+24, 4, recombine+24, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+22, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+22, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+22, 4, recombine+22, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+20, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+20, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+20, 4, recombine+20, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+18, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+18, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+18, 4, recombine+18, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+16, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+16, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+16, 4, recombine+16, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+14, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+14, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+14, 4, recombine+14, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+12, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+12, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+12, 4, recombine+12, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+10, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+10, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+10, 4, recombine+10, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+8, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+8, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+8, 4, recombine+8, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+6, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+6, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+6, 4, recombine+6, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+4, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+4, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+4, 4, recombine+4, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+2, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+2, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+0+0, 2, p_10+116);
-	GF2X_MUL(4, temp2, 2, g_sum+0+0, 2, p_11+116);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(166, recombine, 3570);
-	memcpy(g_sum+341, recombine+112, 110*DIGIT_SIZE_B);
+	gf2x_add(54, g_sum+342, 54, g_sum+342, 54, temp+54);
+	right_bit_shift_n(110, g_sum+342, 50);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+391, g_sum+391, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+393, g_sum+393, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+387+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+387+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+387+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+387+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+389+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+389+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+389+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+389+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+387+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+387+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+387+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+387+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+389+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+389+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+389+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+389+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -3184,54 +2399,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+379+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+379+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+379+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+379+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+381+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+381+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+381+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+381+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+379+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+379+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+379+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+379+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+381+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+381+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+381+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+381+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -3264,78 +2475,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1785, depth: 3
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+367+12, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+367+12, 16, p_01+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+367);
-	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+367);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+369+12, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+369+12, 16, p_01+208);
+	gf2x_add(28, f_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_00+208+4, 12, f_sum+369);
+	GF2X_MUL(24, temp2, 12, p_01+208+4, 12, g_sum+369);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+367+8, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+367+8, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+367+4, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+367+4, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+367+0, 4, p_00+208);
-	GF2X_MUL(8, temp2, 4, g_sum+367+0, 4, p_01+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 28*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 12*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+367+12, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+367+12, 16, p_11+208);
-	gf2x_add(32, recombine+12, 32, temp, 32, temp2);
-	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+367);
-	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+367);
+	gf2x_add(12, f_sum+612, 12, f_sum+612, 12, temp+12);
+	right_bit_shift_n(28, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+369+12, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+369+12, 16, p_11+208);
+	gf2x_add(28, g_sum+612, 28, temp+4, 28, temp2+4);
+	GF2X_MUL(24, temp, 12, p_10+208+4, 12, f_sum+369);
+	GF2X_MUL(24, temp2, 12, p_11+208+4, 12, g_sum+369);
 	gf2x_add(24, temp, 24, temp, 24, temp2);
-	gf2x_add(24, recombine+4, 24, recombine+4, 24, temp);
-	GF2X_MUL(8, temp, 4, f_sum+367+8, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+367+8, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+8, 8, recombine+8, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+367+4, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+367+4, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+367+0, 4, p_10+208);
-	GF2X_MUL(8, temp2, 4, g_sum+367+0, 4, p_11+208);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(44, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 28*DIGIT_SIZE_B);
+	gf2x_add(12, g_sum+612, 12, g_sum+612, 12, temp+12);
+	right_bit_shift_n(28, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+617, g_sum+617, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+621, g_sum+621, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+613+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+613+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+613+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+617+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+617+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+617+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -3353,37 +2536,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 765, depth: 4
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_01+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_01+224);
+	gf2x_add(12, f_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_00+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_01+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_00+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_01+224);
+	gf2x_add(4, f_sum+661, 4, f_sum+661, 4, temp+4);
+	right_bit_shift_n(12, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+4, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+4, 8, p_11+224);
+	gf2x_add(12, g_sum+661, 12, temp+4, 12, temp2+4);
+	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+613);
+	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+613);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 12*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+4, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+4, 8, p_11+224);
-	gf2x_add(16, recombine+4, 16, temp, 16, temp2);
-	GF2X_MUL(8, temp, 4, p_10+224+4, 4, f_sum+609);
-	GF2X_MUL(8, temp2, 4, p_11+224+4, 4, g_sum+609);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+4, 8, recombine+4, 8, temp);
-	GF2X_MUL(8, temp, 4, f_sum+609+0, 4, p_10+224);
-	GF2X_MUL(8, temp2, 4, g_sum+609+0, 4, p_11+224);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(20, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 12*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+661, 4, g_sum+661, 4, temp+4);
+	right_bit_shift_n(12, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_256(255, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 765, depth: 4
 	memset(q_00+194, 0x00, 4*DIGIT_SIZE_B);
@@ -3488,158 +2661,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 3408, depth: 2
-	memset(recombine, 0x00, 26*DIGIT_SIZE_B);
-	GF2X_MUL(56, temp, 28, f_sum+341+26, 28, p_00+176);
-	GF2X_MUL(56, temp2, 28, g_sum+341+26, 28, p_01+176);
-	gf2x_add(56, recombine+26, 56, temp, 56, temp2);
-	GF2X_MUL(52, temp, 26, p_00+176+2, 26, f_sum+341);
-	GF2X_MUL(52, temp2, 26, p_01+176+2, 26, g_sum+341);
+	// Digits to shift: 27
+	// Displacement: 28
+	GF2X_MUL(56, temp, 28, f_sum+343+26, 28, p_00+176);
+	GF2X_MUL(56, temp2, 28, g_sum+343+26, 28, p_01+176);
+	gf2x_add(54, f_sum+519, 54, temp+2, 54, temp2+2);
+	GF2X_MUL(52, temp, 26, p_00+176+2, 26, f_sum+343);
+	GF2X_MUL(52, temp2, 26, p_01+176+2, 26, g_sum+343);
 	gf2x_add(52, temp, 52, temp, 52, temp2);
-	gf2x_add(52, recombine+2, 52, recombine+2, 52, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+24, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+24, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+24, 4, recombine+24, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+22, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+22, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+22, 4, recombine+22, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+20, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+20, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+20, 4, recombine+20, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+18, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+18, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+18, 4, recombine+18, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+16, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+16, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+16, 4, recombine+16, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+14, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+14, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+14, 4, recombine+14, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+12, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+12, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+12, 4, recombine+12, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+10, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+10, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+10, 4, recombine+10, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+8, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+8, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+8, 4, recombine+8, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+6, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+6, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+6, 4, recombine+6, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+4, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+4, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+4, 4, recombine+4, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+2, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+2, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+0, 2, p_00+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+0, 2, p_01+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(82, recombine, 1785);
-	memcpy(f_sum+517, recombine+56, 54*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 26*DIGIT_SIZE_B);
-	GF2X_MUL(56, temp, 28, f_sum+341+26, 28, p_10+176);
-	GF2X_MUL(56, temp2, 28, g_sum+341+26, 28, p_11+176);
-	gf2x_add(56, recombine+26, 56, temp, 56, temp2);
-	GF2X_MUL(52, temp, 26, p_10+176+2, 26, f_sum+341);
-	GF2X_MUL(52, temp2, 26, p_11+176+2, 26, g_sum+341);
+	gf2x_add(26, f_sum+519, 26, f_sum+519, 26, temp+26);
+	right_bit_shift_n(54, f_sum+519, 57);
+	GF2X_MUL(56, temp, 28, f_sum+343+26, 28, p_10+176);
+	GF2X_MUL(56, temp2, 28, g_sum+343+26, 28, p_11+176);
+	gf2x_add(54, g_sum+519, 54, temp+2, 54, temp2+2);
+	GF2X_MUL(52, temp, 26, p_10+176+2, 26, f_sum+343);
+	GF2X_MUL(52, temp2, 26, p_11+176+2, 26, g_sum+343);
 	gf2x_add(52, temp, 52, temp, 52, temp2);
-	gf2x_add(52, recombine+2, 52, recombine+2, 52, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+24, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+24, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+24, 4, recombine+24, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+22, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+22, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+22, 4, recombine+22, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+20, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+20, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+20, 4, recombine+20, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+18, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+18, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+18, 4, recombine+18, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+16, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+16, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+16, 4, recombine+16, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+14, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+14, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+14, 4, recombine+14, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+12, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+12, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+12, 4, recombine+12, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+10, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+10, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+10, 4, recombine+10, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+8, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+8, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+8, 4, recombine+8, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+6, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+6, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+6, 4, recombine+6, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+4, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+4, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+4, 4, recombine+4, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+2, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+2, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+341+0, 2, p_10+176);
-	GF2X_MUL(4, temp2, 2, g_sum+341+0, 2, p_11+176);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(82, recombine, 1785);
-	memcpy(g_sum+517, recombine+56, 54*DIGIT_SIZE_B);
+	gf2x_add(26, g_sum+519, 26, g_sum+519, 26, temp+26);
+	right_bit_shift_n(54, g_sum+519, 57);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+539, g_sum+539, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+542, g_sum+542, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+535+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+535+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+535+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+535+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+538+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+538+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+538+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+538+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+535+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+535+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+535+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+535+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+538+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+538+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+538+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+538+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -3657,54 +2722,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1020, depth: 4
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+527+8, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+527+8, 8, p_01+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+527+0, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+527+0, 8, p_01+224);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+530+8, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+530+8, 8, p_01+224);
+	gf2x_add(16, f_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+530+0, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+530+0, 8, p_01+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 16*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 8*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+527+8, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+527+8, 8, p_11+224);
-	gf2x_add(16, recombine+8, 16, temp, 16, temp2);
-	GF2X_MUL(16, temp, 8, f_sum+527+0, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+527+0, 8, p_11+224);
+	gf2x_add(8, f_sum+661, 8, f_sum+661, 8, temp+8);
+	right_bit_shift_n(16, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+530+8, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+530+8, 8, p_11+224);
+	gf2x_add(16, g_sum+661+0, 16, temp, 16, temp2);
+	GF2X_MUL(16, temp, 8, f_sum+530+0, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+530+0, 8, p_11+224);
 	gf2x_add(16, temp, 16, temp, 16, temp2);
-	gf2x_add(16, recombine+0, 16, recombine+0, 16, temp);
-	right_bit_shift_wide_n(24, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 16*DIGIT_SIZE_B);
+	gf2x_add(8, g_sum+661, 8, g_sum+661, 8, temp+8);
+	right_bit_shift_n(16, g_sum+661, 62);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+661, g_sum+661, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+666, g_sum+666, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+657+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+657+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+657+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+662+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+662+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+662+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -3737,86 +2798,50 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 1623, depth: 3
-	memset(recombine, 0x00, 10*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+10, 16, p_00+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+10, 16, p_01+208);
-	gf2x_add(32, recombine+10, 32, temp, 32, temp2);
-	GF2X_MUL(20, temp, 10, p_00+208+6, 10, f_sum+517);
-	GF2X_MUL(20, temp2, 10, p_01+208+6, 10, g_sum+517);
+	// Digits to shift: 15
+	// Displacement: 16
+	GF2X_MUL(32, temp, 16, f_sum+520+10, 16, p_00+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+10, 16, p_01+208);
+	gf2x_add(26, f_sum+612, 26, temp+6, 26, temp2+6);
+	GF2X_MUL(20, temp, 10, p_00+208+6, 10, f_sum+520);
+	GF2X_MUL(20, temp2, 10, p_01+208+6, 10, g_sum+520);
 	gf2x_add(20, temp, 20, temp, 20, temp2);
-	gf2x_add(20, recombine+6, 20, recombine+6, 20, temp);
-	GF2X_MUL(12, temp, 6, f_sum+517+4, 6, p_00+208);
-	GF2X_MUL(12, temp2, 6, g_sum+517+4, 6, p_01+208);
-	gf2x_add(12, temp, 12, temp, 12, temp2);
-	gf2x_add(12, recombine+4, 12, recombine+4, 12, temp);
-	GF2X_MUL(8, temp, 4, p_00+208+2, 4, f_sum+517);
-	GF2X_MUL(8, temp2, 4, p_01+208+2, 4, g_sum+517);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+2, 8, recombine+2, 8, temp);
-	GF2X_MUL(4, temp, 2, f_sum+517+2, 2, p_00+208);
-	GF2X_MUL(4, temp2, 2, g_sum+517+2, 2, p_01+208);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+517+0, 2, p_00+208);
-	GF2X_MUL(4, temp2, 2, g_sum+517+0, 2, p_01+208);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(42, recombine, 1020);
-	memcpy(f_sum+609, recombine+32, 26*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 10*DIGIT_SIZE_B);
-	GF2X_MUL(32, temp, 16, f_sum+517+10, 16, p_10+208);
-	GF2X_MUL(32, temp2, 16, g_sum+517+10, 16, p_11+208);
-	gf2x_add(32, recombine+10, 32, temp, 32, temp2);
-	GF2X_MUL(20, temp, 10, p_10+208+6, 10, f_sum+517);
-	GF2X_MUL(20, temp2, 10, p_11+208+6, 10, g_sum+517);
+	gf2x_add(10, f_sum+612, 10, f_sum+612, 10, temp+10);
+	right_bit_shift_n(26, f_sum+612, 60);
+	GF2X_MUL(32, temp, 16, f_sum+520+10, 16, p_10+208);
+	GF2X_MUL(32, temp2, 16, g_sum+520+10, 16, p_11+208);
+	gf2x_add(26, g_sum+612, 26, temp+6, 26, temp2+6);
+	GF2X_MUL(20, temp, 10, p_10+208+6, 10, f_sum+520);
+	GF2X_MUL(20, temp2, 10, p_11+208+6, 10, g_sum+520);
 	gf2x_add(20, temp, 20, temp, 20, temp2);
-	gf2x_add(20, recombine+6, 20, recombine+6, 20, temp);
-	GF2X_MUL(12, temp, 6, f_sum+517+4, 6, p_10+208);
-	GF2X_MUL(12, temp2, 6, g_sum+517+4, 6, p_11+208);
-	gf2x_add(12, temp, 12, temp, 12, temp2);
-	gf2x_add(12, recombine+4, 12, recombine+4, 12, temp);
-	GF2X_MUL(8, temp, 4, p_10+208+2, 4, f_sum+517);
-	GF2X_MUL(8, temp2, 4, p_11+208+2, 4, g_sum+517);
-	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+2, 8, recombine+2, 8, temp);
-	GF2X_MUL(4, temp, 2, f_sum+517+2, 2, p_10+208);
-	GF2X_MUL(4, temp2, 2, g_sum+517+2, 2, p_11+208);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+517+0, 2, p_10+208);
-	GF2X_MUL(4, temp2, 2, g_sum+517+0, 2, p_11+208);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(42, recombine, 1020);
-	memcpy(g_sum+609, recombine+32, 26*DIGIT_SIZE_B);
+	gf2x_add(10, g_sum+612, 10, g_sum+612, 10, temp+10);
+	right_bit_shift_n(26, g_sum+612, 60);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+615, g_sum+615, p_00+232, p_01+232, p_10+232, p_11+232);
+	delta = divstepsx_256(255, delta, f_sum+619, g_sum+619, p_00+232, p_01+232, p_10+232, p_11+232);
 
 	// Calculating left operands: n: 510, depth: 5
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+611+4, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+611+4, 4, p_01+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+611+0, 4, p_00+232);
-	GF2X_MUL(8, temp2, 4, g_sum+611+0, 4, p_01+232);
+	// Digits to shift: 3
+	// Displacement: 4
+	GF2X_MUL(8, temp, 4, f_sum+615+4, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+615+4, 4, p_01+232);
+	gf2x_add(8, f_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+615+0, 4, p_00+232);
+	GF2X_MUL(8, temp2, 4, g_sum+615+0, 4, p_01+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(f_sum+681, recombine+8, 8*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 4*DIGIT_SIZE_B);
-	GF2X_MUL(8, temp, 4, f_sum+611+4, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+611+4, 4, p_11+232);
-	gf2x_add(8, recombine+4, 8, temp, 8, temp2);
-	GF2X_MUL(8, temp, 4, f_sum+611+0, 4, p_10+232);
-	GF2X_MUL(8, temp2, 4, g_sum+611+0, 4, p_11+232);
+	gf2x_add(4, f_sum+686, 4, f_sum+686, 4, temp+4);
+	right_bit_shift_n(8, f_sum+686, 63);
+	GF2X_MUL(8, temp, 4, f_sum+615+4, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+615+4, 4, p_11+232);
+	gf2x_add(8, g_sum+686+0, 8, temp, 8, temp2);
+	GF2X_MUL(8, temp, 4, f_sum+615+0, 4, p_10+232);
+	GF2X_MUL(8, temp2, 4, g_sum+615+0, 4, p_11+232);
 	gf2x_add(8, temp, 8, temp, 8, temp2);
-	gf2x_add(8, recombine+0, 8, recombine+0, 8, temp);
-	right_bit_shift_wide_n(12, recombine, 255);
-	memcpy(g_sum+681, recombine+8, 8*DIGIT_SIZE_B);
+	gf2x_add(4, g_sum+686, 4, g_sum+686, 4, temp+4);
+	right_bit_shift_n(8, g_sum+686, 63);
 	
 
-	delta = divstepsx_256(255, delta, f_sum+681, g_sum+681, q_00+218, q_01+218, q_10+218, q_11+218);
+	delta = divstepsx_256(255, delta, f_sum+687, g_sum+687, q_00+218, q_01+218, q_10+218, q_11+218);
 
 	// Recombining results: n: 510, depth: 5
 	GF2X_MUL(8, temp, 4, q_00+218+0, 4, p_00+232);
@@ -3834,53 +2859,27 @@ int jumpdivstep_7187(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, 
 	
 
 	// Calculating left operands: n: 603, depth: 4
-	memset(recombine, 0x00, 2*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+2, 8, p_00+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+2, 8, p_01+224);
-	gf2x_add(16, recombine+2, 16, temp, 16, temp2);
-	GF2X_MUL(4, temp, 2, p_00+224+6, 2, f_sum+609);
-	GF2X_MUL(4, temp2, 2, p_01+224+6, 2, g_sum+609);
+	// Digits to shift: 7
+	// Displacement: 8
+	GF2X_MUL(16, temp, 8, f_sum+613+2, 8, p_00+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+2, 8, p_01+224);
+	gf2x_add(10, f_sum+661, 10, temp+6, 10, temp2+6);
+	GF2X_MUL(4, temp, 2, p_00+224+6, 2, f_sum+613);
+	GF2X_MUL(4, temp2, 2, p_01+224+6, 2, g_sum+613);
 	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+6, 4, recombine+6, 4, temp);
-	GF2X_MUL(4, temp, 2, p_00+224+4, 2, f_sum+609);
-	GF2X_MUL(4, temp2, 2, p_01+224+4, 2, g_sum+609);
+	gf2x_add(2, f_sum+661, 2, f_sum+661, 2, temp+2);
+	right_bit_shift_n(10, f_sum+661, 62);
+	GF2X_MUL(16, temp, 8, f_sum+613+2, 8, p_10+224);
+	GF2X_MUL(16, temp2, 8, g_sum+613+2, 8, p_11+224);
+	gf2x_add(10, g_sum+661, 10, temp+6, 10, temp2+6);
+	GF2X_MUL(4, temp, 2, p_10+224+6, 2, f_sum+613);
+	GF2X_MUL(4, temp2, 2, p_11+224+6, 2, g_sum+613);
 	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+4, 4, recombine+4, 4, temp);
-	GF2X_MUL(4, temp, 2, p_00+224+2, 2, f_sum+609);
-	GF2X_MUL(4, temp2, 2, p_01+224+2, 2, g_sum+609);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+609+0, 2, p_00+224);
-	GF2X_MUL(4, temp2, 2, g_sum+609+0, 2, p_01+224);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(18, recombine, 510);
-	memcpy(f_sum+657, recombine+16, 10*DIGIT_SIZE_B);
-	memset(recombine, 0x00, 2*DIGIT_SIZE_B);
-	GF2X_MUL(16, temp, 8, f_sum+609+2, 8, p_10+224);
-	GF2X_MUL(16, temp2, 8, g_sum+609+2, 8, p_11+224);
-	gf2x_add(16, recombine+2, 16, temp, 16, temp2);
-	GF2X_MUL(4, temp, 2, p_10+224+6, 2, f_sum+609);
-	GF2X_MUL(4, temp2, 2, p_11+224+6, 2, g_sum+609);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+6, 4, recombine+6, 4, temp);
-	GF2X_MUL(4, temp, 2, p_10+224+4, 2, f_sum+609);
-	GF2X_MUL(4, temp2, 2, p_11+224+4, 2, g_sum+609);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+4, 4, recombine+4, 4, temp);
-	GF2X_MUL(4, temp, 2, p_10+224+2, 2, f_sum+609);
-	GF2X_MUL(4, temp2, 2, p_11+224+2, 2, g_sum+609);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+2, 4, recombine+2, 4, temp);
-	GF2X_MUL(4, temp, 2, f_sum+609+0, 2, p_10+224);
-	GF2X_MUL(4, temp2, 2, g_sum+609+0, 2, p_11+224);
-	gf2x_add(4, temp, 4, temp, 4, temp2);
-	gf2x_add(4, recombine+0, 4, recombine+0, 4, temp);
-	right_bit_shift_wide_n(18, recombine, 510);
-	memcpy(g_sum+657, recombine+16, 10*DIGIT_SIZE_B);
+	gf2x_add(2, g_sum+661, 2, g_sum+661, 2, temp+2);
+	right_bit_shift_n(10, g_sum+661, 62);
 	
 
-	delta = divstepsx_128(93, delta, f_sum+657, g_sum+657, q_00+210, q_01+210, q_10+210, q_11+210);
+	delta = divstepsx_128(93, delta, f_sum+662, g_sum+662, q_00+210, q_01+210, q_10+210, q_11+210);
 
 	// Recombining results: n: 603, depth: 4
 	memset(q_00+194, 0x00, 6*DIGIT_SIZE_B);

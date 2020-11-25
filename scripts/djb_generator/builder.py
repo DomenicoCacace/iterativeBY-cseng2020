@@ -61,12 +61,13 @@ def calculatePQsize(node):
 # g_sum arrays during the execution and the offsets to access the right portion
 # of the arrays for each level of the tree
 def calculateFGsumSize(node):
-    size = 0
+    size = 1
     sumOffset = []
 
     while(node.left != None):
         sumOffset.append(size)
         size+=node.num_digits_n+node.num_digits_j
+        size+=1
         node = node.right
     
     k.fgsumSize = size
