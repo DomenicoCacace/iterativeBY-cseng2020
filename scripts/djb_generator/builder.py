@@ -1,8 +1,29 @@
+# Software Artifact of the paper Fast constant-time binary polynomial modular inversion
+# for post-quantum cryptosystems
+#
+# @author Domenico Cacace <domenico.cacace@mail.polimi.it>
+# 
+# This code is hereby placed in the public domain.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+# OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
 import os
 import math
 import treeUtils as tree
 import generator as gen
 import constants as k
+import argparse
 
 
 # Starting from the prime number to treat reconstructs the recursive
@@ -34,22 +55,23 @@ def calculateFGoffsets(node):
 # Calculates the amount of memory to be allocated to store all the P and
 # Q matrices during the execution and the offsets to access the right portion
 # of the matrices for each level of the tree
-# TODO: fix, first element can be removed; indexes should be changed too
 def calculatePQsize(node):
     psize = 0
     qsize = 0
     p_offset = []
     q_offset = []
-    p_offset.append(0)
-    q_offset.append(0)
 
     while(node.left != None):
-        qsize+=node.left.num_digits_n
-        psize+=node.right.num_digits_n
         p_offset.append(psize)
         q_offset.append(qsize)
-
+        qsize+=node.left.num_digits_n
+        psize+=node.right.num_digits_n
+        
         node = node.right
+
+        
+    p_offset.append(psize)
+    q_offset.append(qsize)
 
     k.psize = psize
     k.qsize = qsize
@@ -73,7 +95,7 @@ def calculateFGsumSize(node):
     k.fgsumSize = size
     k.fgsum_offset = sumOffset
 
-
+# Determines the input operands offsets of a node based on the parent-child relation of the tree nodes
 def setOperandsOffsets(node):
     if(node == None):
         return
@@ -110,16 +132,55 @@ def generateSrc(p):
 # Builds the source code for each prime and writes it to single files, then assembles the files
 # into a final one 
 def main():
-    #primes = [7187, 8237, 10853]
-    outputPath = "/home/d0m/Documents/iterativeBY-cseng2020/src/inverse/library/djb_support/"
-    primes = [7187, 8237, 10853, 13109, 13397, 15331, 16067, 16229, 19709, 20981, 21611, 22901, 23371, 25579, 28277, 28411, 30803, 35117, 35507, 36629, 40787, 42677, 48371, 52667, 58171, 61717, 83579] 
+    dirName = os.path.dirname(__file__)
+
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-ws", "--wordsize", help="The number of bits addressable by the CPU at once (default: 256)", default=256, type=int, dest="ws")
+    argParser.add_argument("-s", "--digit-size", help="The number of bits per digit (default: 64)", default=64, type=int, dest="size")
+    args = argParser.parse_args()
+    
+    # Setting memory word size related parameters
+    k.WS = args.ws
+    k.DIGIT_SIZE_b = args.size
+    k.DIGIT_SIZE_B = k.DIGIT_SIZE_b >> 3
+    
+
+    # Loading the license as an array of strings
+    licenseFile = os.path.join(dirName, "license.txt")
+    f = open(licenseFile)
+    k.swLicense = f.read().splitlines()
+    f.close()
+
+    # Loading the primes to implement in an array
+    primes = []
+    primesFile = os.path.join(dirName, "primes.txt")
+    f = open(primesFile)
+    while True:
+        prime = f.readline()
+        if prime:
+            primes.append(int(prime))
+        else:
+            break
+    f.close()
+    
+    # Generating and writing the jumpdivstep functions
+    outputPath = os.path.join(dirName, "../../src/inverse/library/djb_support/")
     for prime in primes:
         k.resetConstants()
         code = generateSrc(prime)
         f = open(outputPath + "jumpdivstep_" + str(prime) + ".c", "w")
         f.write(code)
         f.close()
-    
+
+    # Generating the header file
+    headerPath = os.path.join(dirName, "../../src/inverse/include/")
+    f = open(headerPath + "inverse_DJB_specific.h", "w")
+    f.writelines(map(lambda x:x+'\n', k.swLicense))
+    f.write("\n")
+    f.write("#include \"../../gf2x/include/gf2x_limbs.h\"\n")
+    f.write("#include \"inverse_DJB_facilities.h\"\n\n\n")
+    f.writelines(map(lambda x:x+'\n', k.signatures))
+    f.close()
 
 
 if __name__ == "__main__":

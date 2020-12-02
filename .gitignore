@@ -54,9 +54,8 @@ dkms.conf
 # Visual Studio Code files
 .vscode/
 
-
 # Build files
 src/benchmarking/build/
-src/benchmarking/.build/
 
+# pycache
 scripts/djb_generator/__pycache__/
