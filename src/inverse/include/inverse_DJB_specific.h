@@ -1,7 +1,4 @@
 /**
-  * Software Artifact of the paper Fast constant-time modular inversion of binary
-  * polynomials for post-quantum cryptosystems
-  *
   * @author Domenico Cacace <domenico.cacace@mail.polimi.it>
   * 
   *

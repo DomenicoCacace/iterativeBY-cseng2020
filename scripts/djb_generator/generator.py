@@ -1,6 +1,3 @@
-# Software Artifact of the paper Fast constant-time binary polynomial modular inversion
-# for post-quantum cryptosystems
-#
 # @author Domenico Cacace <domenico.cacace@mail.polimi.it>
 # 
 # This code is hereby placed in the public domain.
@@ -260,6 +257,9 @@ def scalarprod(nr, res, na, a0, a1, nb, b0, b1, offset=0):
 
 # Generates the code for a base multiplication
 def GF2X_MUL(nr, res, na, a, nb, b):
+    if na < k.CHUNK_SIZE:
+        return "gf2x_mul_" + str(na) + "_avx(" + res + ", " + a + ", " + b +");"
+    
     return "GF2X_MUL(" + str(nr) + ", " + res + ", " + str(na) + ", " + a + ", " + str(nb) + ", " + b + ");"
 
 # Generates the code for a base addition

@@ -1,6 +1,3 @@
-# Software Artifact of the paper Fast constant-time binary polynomial modular inversion
-# for post-quantum cryptosystems
-#
 # @author Domenico Cacace <domenico.cacace@mail.polimi.it>
 # 
 # This code is hereby placed in the public domain.
@@ -21,6 +18,9 @@
 DIGIT_SIZE_B = 0
 DIGIT_SIZE_b =0
 WS = 0
+
+# Maximum size for direct multiplications
+CHUNK_SIZE = 9
 
 # Software license
 swLicense = []
