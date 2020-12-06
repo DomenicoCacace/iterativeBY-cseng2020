@@ -1,6 +1,3 @@
-# Software Artifact of the paper Fast constant-time binary polynomial modular inversion
-# for post-quantum cryptosystems
-#
 # @author Domenico Cacace <domenico.cacace@mail.polimi.it>
 # 
 # This code is hereby placed in the public domain.

@@ -7,7 +7,7 @@ set(OPTIMIZATION_FLAGS "-O2 -fipa-cp-clone -floop-interchange -fgcse-after-reloa
                         -fsplit-loops -fsplit-paths -ftree-loop-distribution -ftree-loop-vectorize \
                         -ftree-partial-pre -funswitch-loops -fvect-cost-model -fvect-cost-model=dynamic -fversion-loops-for-strides")
 
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -pedantic -Wuninitialized -fno-var-tracking-assignments -march=native -O3 -g3 -Wno-unused-function")
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -pedantic -Wuninitialized -fno-var-tracking-assignments -march=native -O0 -g3 -Wno-unused-function")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -pedantic -Wuninitialized -march=native -g3")
 message("FLAGS" ${CMAKE_C_FLAGS})
@@ -27,8 +27,7 @@ set(HEADERS ${BASE_DIR}/gf2x/include/gf2x_limbs.h
 set(SOURCES ${BASE_DIR}/gf2x/library/gf2x_arith.c
             ${BASE_DIR}/gf2x/library/gf2x_arith_mod_xPplusOne.c
             ${BASE_DIR}/inverse/library/inverse_exp.c
-            ${BASE_DIR}/inverse/library/inverse_DJB.c
-            ${BASE_DIR}/inverse/library/djb_support/inverse_DJB_facilities.c)
+            ${BASE_DIR}/inverse/library/inverse_DJB.c)
 
 # Current primes in the specification
 list(APPEND PRIME_LIST
