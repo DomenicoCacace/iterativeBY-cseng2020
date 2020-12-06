@@ -1,34 +1,32 @@
+# Software Artifact of the paper Fast constant-time binary polynomial modular inversion
+# for post-quantum cryptosystems
+#
+# @author Domenico Cacace <domenico.cacace@mail.polimi.it>
+# 
+# This code is hereby placed in the public domain.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+# OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 import treeUtils as tree
 import constants as k
 import math
+import re
 
 # Assembles the declaration part and the "execution" part
 def assemble(root, p):
     code = []
+    code.extend(k.swLicense)
     output = ""
-    code.append("/**")
-    code.append("  * Software Artifact of the paper A Comprehensive Analysis of Constant-time")
-    code.append("  * Polynomial Inversion for Post-quantum Cryptosystems")
-    code.append("  *")
-    code.append("  * @author Domenico Cacace <domenico.cacace@mail.polimi.it>")
-    code.append("  * ")
-    code.append("  * This code has been automatically generated")
-    code.append("  *")
-    code.append("  * This code is hereby placed in the public domain.")
-    code.append("  *")
-    code.append("  * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS")
-    code.append("  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED")
-    code.append("  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE")
-    code.append("  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE")
-    code.append("  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR")
-    code.append("  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF")
-    code.append("  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR")
-    code.append("  * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,")
-    code.append("  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE")
-    code.append("  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,")
-    code.append("  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.")
-    code.append("  *")
-    code.append("  **/")
 
     for line in code:
         output+= str(line) + "\n"
@@ -41,15 +39,28 @@ def assemble(root, p):
     code.append("return delta;")
 
     output+="#include \"../../include/inverse_DJB_facilities.h\"\n\n"
-    output+="int jumpdivstep_" + str(p) + "(int n, int delta, int nf, DIGIT *f, DIGIT *g, DIGIT *t_00, DIGIT *t_01, DIGIT *t_10, DIGIT *t_11, float x) {\n"
+    output+="int jumpdivstep_" + str(p) + "(int delta, DIGIT *f, DIGIT *g, DIGIT *t_00, DIGIT *t_01, DIGIT *t_10, DIGIT *t_11) {\n"
+    k.signatures.append("int jumpdivstep_" + str(p) + "(int delta, DIGIT *f, DIGIT *g, DIGIT *t_00, DIGIT *t_01, DIGIT *t_10, DIGIT *t_11);")
     for line in code:
         if(not k.debug):
             if line.startswith("print_pol"):
                 continue
-        output+="\t" + str(line) + "\n"
+        output+="\t" +cleanLine(line) + "\n"
     output+="}"
 
     return output
+
+# Cleans lines where there are multiple consecutive sums
+def cleanLine(line):
+    while True:
+        res = re.search(r"\+(\d+)\+(\d+)", line)
+        if res == None:
+            break
+
+        sub = int(res.groups()[0]) + int(res.groups()[1])
+        line = re.sub(r"\+((\d+)\+(\d+))", "+"+str(sub), line)
+
+    return line
 
 def unrollTree(node):
     code = []
@@ -100,8 +111,8 @@ def init(root):
     code.append("")
 
     # TODO: adjust sizes
-    code.append("DIGIT temp[" + str(root.num_digits_n*2 + root.num_digits_j - root.num_digits_nminusj) +"];")
-    code.append("DIGIT temp2[" + str(root.num_digits_n*2 + root.num_digits_j - root.num_digits_nminusj) +"];")
+    code.append("DIGIT temp[" + str(root.num_digits_j*2)+"];")
+    code.append("DIGIT temp2[" + str(root.num_digits_j*2)+"];")
     return code
 
 def calculateLeftOperands(node):
@@ -113,36 +124,30 @@ def calculateLeftOperands(node):
     bitToShift = node.j % k.DIGIT_SIZE_b 
     digitToShift = math.floor(node.j/k.DIGIT_SIZE_b)
     displ = node.num_digits_n - node.num_digits_nminusj
-    resOff = k.fgsum_offset[node.depth]-1 #- digitToShift + (node.num_digits_n + node.num_digits_j - node.num_digits_nminusj)
-    code.append("// Digits to shift: " + str(digitToShift))
-    code.append("// Displacement: " + str(displ))
+    resOff = k.fgsum_offset[node.depth] - 1
 
     if(node.operandSource == "fgsum"):
-        # f_sum
         code.extend(scalarprod(node.num_digits_n + node.num_digits_j, "f_sum+"+str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off), displ))
         code.append(print_pol("f_sum+"+str(resOff), "f_sum", node.num_digits_n+node.num_digits_j))
-        code.append("right_bit_shift_n(" + str(node.num_digits_n) + ", f_sum+"+str(resOff)+", "+ str(bitToShift)+");")
+        code.append(digit_shift(node.num_digits_n, "f_sum+"+str(resOff), bitToShift))
         code.append(print_pol("f_sum+"+str(k.fgsum_offset[node.depth]), "f_sum", node.num_digits_n))
         
-        # g_sum
         code.extend(scalarprod(node.num_digits_n + node.num_digits_j, "g_sum+"+str(resOff), node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f_sum+" + str(fg_off), "g_sum+" + str(fg_off), displ))
         code.append(print_pol("g_sum+"+str(resOff), "g_sum", node.num_digits_n+node.num_digits_j))
-        code.append("right_bit_shift_n(" + str(node.num_digits_n) + ", g_sum+"+str(resOff)+", "+ str(bitToShift)+");")
+        code.append(digit_shift(node.num_digits_n, "g_sum+"+str(resOff), bitToShift))
         code.append(print_pol("g_sum+"+str(k.fgsum_offset[node.depth]), "g_sum", node.num_digits_n))
     else:       # using f and g to calculate f_sum and g_sum        
-        # f_sum
         code.extend(scalarprod(node.num_digits_n + node.num_digits_j, "f_sum+"+str(resOff), node.num_digits_j, "p_00+" + str(p_off), "p_01+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off), displ))
         code.append(print_pol("f_sum+"+str(resOff), "f_sum", node.num_digits_n+node.num_digits_j))
-        code.append("right_bit_shift_n(" + str(node.num_digits_n) + ", f_sum+"+str(resOff)+", "+ str(bitToShift)+");")
+        code.append(digit_shift(node.num_digits_n, "f_sum+"+str(resOff), bitToShift))
         code.append(print_pol("f_sum+"+str(k.fgsum_offset[node.depth]), "f_sum", node.num_digits_n))
         
-        # g_sum
         code.extend(scalarprod(node.num_digits_n + node.num_digits_j, "g_sum+"+str(resOff), node.num_digits_j, "p_10+" + str(p_off), "p_11+" + str(p_off), node.num_digits_n, "f+" + str(fg_off), "g+" + str(fg_off), displ))
         code.append(print_pol("g_sum+"+str(resOff), "g_sum", node.num_digits_n+node.num_digits_j))
-        code.append("right_bit_shift_n(" + str(node.num_digits_n) + ", g_sum+"+str(resOff)+", "+ str(bitToShift)+");")
+        code.append(digit_shift(node.num_digits_n, "g_sum+"+str(resOff), bitToShift))
         code.append(print_pol("g_sum+"+str(k.fgsum_offset[node.depth]), "g_sum", node.num_digits_n))
 
-    code.append("\n")
+    code.append("")
     return code
 
 def recombine(node):
@@ -177,7 +182,7 @@ def recombine(node):
     code.append(print_pol(resDest+"_10+"+str(resOff), "t10", node.num_digits_n))
     code.append(print_pol(resDest+"_11+"+str(resOff), "t11", node.num_digits_n))
 
-    code.append("\n")
+    code.append("")
     return code
 
 
@@ -269,10 +274,9 @@ def memset(target, size):
 def memcpy(dest, src, len):
     return "memcpy(" + dest + ", " + src + ", " + str(len) + "*DIGIT_SIZE_B);"
 
-# Generates the code to perform a right shift; the function called is an inline,
-# no need to "decompose" it into its parts
+# Generates the code to perform a right shift 
 def digit_shift(len, input, amount):
-    return "right_bit_shift_wide_n(" + str(len) + ", " + input + ", " + str(amount) + ");"
+    return "right_bit_shift_n(" + str(len) + ", " + input + ", " + str(amount) + ");"
 
 # Prints out the polynomial, split in DIGITs and in hexadecimal format
 def print_pol(poly, label, size):
@@ -313,7 +317,7 @@ def support_jumpdivstep(node, resDest, f, g, out_off):
         code += resDest + "_00+" + str(out_off) + ", "
         code += resDest + "_01+" + str(out_off) + ", "
         code += resDest + "_10+" + str(out_off) + ", "
-        code += resDest + "_11+" + str(out_off) + ", x);\n"
+        code += resDest + "_11+" + str(out_off) + ", 0.5);\n"
         return code
 
 # Divstep for n < 128

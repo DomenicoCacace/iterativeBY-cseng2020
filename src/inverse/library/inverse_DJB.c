@@ -61,85 +61,85 @@ int inverse_DJB(DIGIT out[], const DIGIT in[], float x)
 
     switch (P) {
         case  7187:
-            delta = jumpdivstep_7187(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_7187(delta, largef, largeg, u, v, q, r);
             break;
         case  8237:
-            delta = jumpdivstep_8237(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_8237(delta, largef, largeg, u, v, q, r);
             break;
         case 10853:
-            delta = jumpdivstep_10853(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_10853(delta, largef, largeg, u, v, q, r);
             break;
         case 13109:
-            delta = jumpdivstep_13109(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_13109(delta, largef, largeg, u, v, q, r);
             break;
         case 13397:
-            delta = jumpdivstep_13397(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_13397(delta, largef, largeg, u, v, q, r);
             break;
         case 15331:
-            delta = jumpdivstep_15331(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_15331(delta, largef, largeg, u, v, q, r);
             break;
         case 16067:
-            delta = jumpdivstep_16067(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_16067(delta, largef, largeg, u, v, q, r);
             break;
         case 16229:
-            delta = jumpdivstep_16229(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_16229(delta, largef, largeg, u, v, q, r);
             break;
         case 19709:
-            delta = jumpdivstep_19709(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_19709(delta, largef, largeg, u, v, q, r);
             break;
         case 20981:
-            delta = jumpdivstep_20981(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_20981(delta, largef, largeg, u, v, q, r);
             break;
         case 21611:
-            delta = jumpdivstep_21611(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_21611(delta, largef, largeg, u, v, q, r);
             break;
         case 22901:
-            delta = jumpdivstep_22901(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_22901(delta, largef, largeg, u, v, q, r);
             break;
         case 23371:
-            delta = jumpdivstep_23371(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_23371(delta, largef, largeg, u, v, q, r);
             break;
         case 25579:
-            delta = jumpdivstep_25579(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_25579(delta, largef, largeg, u, v, q, r);
             break;
         case 28277:
-            delta = jumpdivstep_28277(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_28277(delta, largef, largeg, u, v, q, r);
             break;
         case 28411:
-            delta = jumpdivstep_28411(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_28411(delta, largef, largeg, u, v, q, r);
             break;
         case 30803:
-            delta = jumpdivstep_30803(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_30803(delta, largef, largeg, u, v, q, r);
             break;
         case 35117:
-            delta = jumpdivstep_35117(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_35117(delta, largef, largeg, u, v, q, r);
             break;
         case 35507:
-            delta = jumpdivstep_35507(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_35507(delta, largef, largeg, u, v, q, r);
             break;
         case 36629:
-            delta = jumpdivstep_36629(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_36629(delta, largef, largeg, u, v, q, r);
             break;
         case 40787:
-            delta = jumpdivstep_40787(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_40787(delta, largef, largeg, u, v, q, r);
             break;
         case 42677:
-            delta = jumpdivstep_42677(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_42677(delta, largef, largeg, u, v, q, r);
             break;
         case 48371:
-            delta = jumpdivstep_48371(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_48371(delta, largef, largeg, u, v, q, r);
             break;
         case 52667:
-            delta = jumpdivstep_52667(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_52667(delta, largef, largeg, u, v, q, r);
             break;
         case 58171:
-            delta = jumpdivstep_58171(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_58171(delta, largef, largeg, u, v, q, r);
             break;
         case 61717:
-            delta = jumpdivstep_61717(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_61717(delta, largef, largeg, u, v, q, r);
             break;
         case 83579:
-            delta = jumpdivstep_83579(2 * P - 1, delta, MATRIX_ELEM_DIGITS, largef, largeg, u, v, q, r, x);
+            delta = jumpdivstep_83579(delta, largef, largeg, u, v, q, r);
             break;
         default:
             break;
