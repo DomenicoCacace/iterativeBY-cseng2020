@@ -1,0 +1,97 @@
+\section{Implementazione ed Ottimizzazione}\label{impl}
+\subsection*{\textbf{Rappresentazione dei polinomi}}
+I polinomi, elementi dell'anello $GF(2)[x]$, sono salvati in forma binaria compatta: ogni bit in un byte rappresenta un 
+coefficiente di un polinomio binario in formato Big-Endian (leggendo da sinistra a destra, i primi elementi che
+si incontrano sono i coefficienti di grado più alto)
+
+Una \textit{machine word} $A_i$ è considerata un \texttt{DIGIT} ed i byte che
+compongono un \texttt{DIGIT} sono in formato Big Endian; allo stesso modo, 
+anche gli elementi con più \texttt{DIGIT} sono rappresentati in 
+formato Big Endian.
+\begin{table}
+    \begin{tabular}{lll}
+    Bin & Hex & Polinomio \\
+    \hline
+    0000 0000 & 0x00 & 0 \\
+    0000 0001 & 0x01 & 1 \\
+    0000 0002 & 0x02 & $x$ \\
+    0000 0003 & 0x03 & $x+1$ \\
+    $\cdots$ & $\cdots$ & $\cdots$ \\
+    0000 1111 & 0x0F & $x^3+x^2+x+1$ \\
+    $\cdots$ & $\cdots$ & $\cdots$ \\
+    1111 1111 & 0xFF & $x^7+x^6+x^5+\cdots+x+1$ \\
+    \end{tabular}
+    \caption{Rappresentazione dei polinomi, singolo byte}
+\end{table}
+\subsubsection*{Estensioni dell'ISA x86}
+L'implementazione proposta in~\cite{benchmark} utilizza AVX, un'estensione 
+dell' Instruction Set Architecture di x86 che permette di lavorare su più parole di memoria
+in parallelo, portando notevoli vantaggi nelle operazioni aritmetiche: ciò significa,
+su una macchina a 64 bit (dimensione di un \texttt{DIGIT}), lavorare su 128 o 256 bit.
+Questo ci permette inoltre di avere un'implementazione molto efficiente per i prodotti, utilizzando funzioni
+altamente specializzate per polinomi di 8 \texttt{DIGIT} o meno e loro combinazioni per dimensioni
+maggiori~\cite{bodrato2007towards}; gli intrinsics permettono anche l'implementazione delle diverse versioni di
+\texttt{divstep}.
+
+
+
+\subsection*{\textbf{Punti critici}}\label{crit}
+Analizzando l'esecuzione dell'algoritmo tramite \texttt{callgrind}, notiamo che la 
+maggior parte del tempo di esecuzione è dovuta a \texttt{gf2x\_scalarprod}: ciò non ci sorprende, in quanto
+questa funzione è invocata due volte per il calcolo di $f^{\prime}(x)$ e $g^{\prime}(x)$ (righe 7-8), e altre quattro per $\mathcal{P \times \mathcal{Q}}$ (riga 10); inoltre,
+per quest'ultima operazione, sono necessarie altrettante chiamate a memcpy, per spostare i risultati ottenuti da un vettore temporaneo alla
+destinazione desiderata.
+
+La funzione \texttt{gf2x\_scalarprod} prende in input due coppie di polinomi ($a_{0},a_{1}$, $b_{0},b_{1}$), di dimensione rispettivamente $na$ e $nb$ \texttt{DIGIT}, e 
+produce in output il prodotto scalare $res = a_{0} \cdot b_{0} + a_{1} \cdot b_{1}$, di dimensione $nr = na+nb$; in realtà, per poter eseguire le moltiplicazioni
+tra polinomi, è necessario spostare l'operando più corto in un buffer e aggiungere zeri nelle posizioni dei coefficienti più significativi mancanti, fino
+a raggiungere la dimensione dell'altro operando. 
+
+Una volta calcolati i prodotti, questi vengono ulteriormente manipolati, troncando i coefficienti superflui, shiftandoli (calcolo di $f^{\prime}$ e $g^{\prime}$, righe 7-8) e 
+spostandoli da una posizione all'altra; analizzando come questi polinomi vengono manipolati, possiamo andare a salvare i risultati direttamente nelle posizioni
+corrette, riduendo i tempi di esecuzione.
+
+\subsection*{\textbf{Ottimizzazioni}}\label{ott}
+
+\subsubsection*{Allocazione dei polinomi}
+Il primo passo nell'unrolling dell'algoritmo ricorsivo consiste nell'allocare in una volta sola tutta la memoria necessaria per salvare
+i risultati e gli operandi intermedi, ossia $ \mathcal{P}, \mathcal{Q}, f^{\prime}$ e $g^{\prime}$; le stesse porzioni di memoria vengono riutilizzate da diverse
+chiamate in momenti diversi, per cui viene presa la dimensione massima per ogni \textit{slot}, individuabile percorrendo il ramo destro dell'albero di ricorsione
+dalla radice all'ultima foglia. Abbiamo quindi, con un albero di ricorsione di profondità $d$:
+\begin{itemize}
+        \item $\mathcal{P}$: 4 array composti da $d$ componenti, ognuno di dimensione \texttt{num\_digits\_j};
+        \item $\mathcal{Q}$: 4 array composti da $d$ componenti, ognuno di dimensione \texttt{num\_digits\_nminusj};
+        \item $f^{\prime}$: 1 array composto da $d-1$ componenti, ognuno di dimensione \texttt{num\_digits\_n} + \texttt{num\_digits\_j};
+        \item $g^{\prime}$: come al punto precedente.
+\end{itemize}
+Tenendo traccia delle dimensioni dei vari componenti è poi possibile determinare gli indici di accesso agli array per i vari valori di $d$.
+
+\subsubsection*{Scomposizione dei prodotti}
+Come accenato, le funzioni per il calcolo del prodotto tra polinomi richiedono operandi di dimensione uguale: invece di aggiungere coefficienti
+nulli al polinomio più corto~($a$), possiamo dividere il polinomio più lungo ($b$) in due parti: la parte \textit{inferiore} ($b_{0}$, coefficienti meno significativi),
+della stessa dimensione di $a$, viene moltiplicata direttamente con $a$ stesso; il procedimento viene quindi ripetuto considerando ora il polinomio $a$ e 
+la parte restante dell'altro polinomio, $b_{1}$, fino ad esaurimento.
+I vari sottoprodotti che vengono calcolati vanno quindi sommati: dati due sottoprodotti successivi $r_i$, $r_{i+1}$, abbiamo che $\deg{r_{i+1}}-\deg{r_i} = na$,
+(in modo simile a quanto sopra, $na$ indica la dimensione del poliniomio più corto alla $i$-esima iterazione).
+
+Quindi, nell'implementazione del generatore, sostituiamo ogni chiamata a \texttt{gf2x\_scalarprod} con la corrispondente sequenza di \texttt{gf2x\_add} e \texttt{GF2X\_MUL},
+utilizzando un accumulatore, $nr$, per tenere traccia dell'offset da considerare;
+inoltre, nel caso i due operandi siano di dimensioni inferiori agli 8 \texttt{DIGIT}, andiamo ad utilizzare direttamente le funzioni specifiche per la dimensione
+desiderata (\texttt{gf2x\_mul\_X\_avx}), evitando le chiamate a \texttt{GF2X\_MUL}.
+
+\subsubsection*{Troncamento e shift dei risultati}
+In quasi tutti i casi l'output di \text{gf2x\_scalarprod} viene troncato, eliminando sempre una porzione dei coefficienti più significativi; dato che il
+metodo di moltiplicazione parte dai coefficienti meno significativi, possiamo bloccarne l'esecuzione prematuramente appena abbiamo tutti i coefficienti
+necessari, evitando il calcolo di quelli che sarebbero poi tagliati. Ciò viene banalmente implementato  nel generatore utilizzando lo stesso accumulatore
+$nr$ citato al punto prima, ma sottraendovi il numero di \texttt{DIGIT} che sarebbero eliminati successivamente. 
+
+A questo punto, possiamo quindi evitare di utilizzare un vettore ausiliario per il calcolo dei prodotti (righe 6-8, 10), ma ne abbiamo ancora bisogno
+per il calcolo di ${(f^{\prime}}\div{x^{j}})$ e $({g^{\prime}}\div{x^{j}})$: queste divisioni sono infatti ottenute tramite uno shift a sinistra di $j$ bit; per risolvere
+questo problema, dividiamo lo shift in due parti:
+\begin{itemize}
+    \item shift di ($\lfloor{j}\div{\texttt{DIGIT\_SIZE\_b}}$\footnote{Dimensione di un \texttt{DIGIT} in bit}$\rfloor$) \texttt{DIGIT} interi;
+    \item shift di ($j \mod \texttt{DIGIT\_SIZE\_b}$) bit singoli.
+\end{itemize}
+Lo shift dei \texttt{DIGIT} interi può essere ricondotto al problema del troncamento dei coefficienti più significativi, aggiustando opportunamente gli offset; per quanto riguarda
+lo shift dei singoli bit (che saranno per costruzione meno di quelli in un \texttt{DIGIT}), abbiamo bisogno di aggiungere un \texttt{DIGIT} in più per ognuno dei polinomi
+$f^{\prime}$ e $g^{\prime}$, in modo da poter shiftare i bit del polinomio desiderato senza andare a sovrascrivere il \texttt{DIGIT} meno significativo del polinomio precedente.

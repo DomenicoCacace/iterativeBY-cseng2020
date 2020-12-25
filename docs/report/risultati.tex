@@ -1,0 +1,35 @@
+\section{Risultati}
+Il framework~\cite{benchmark}, oltre a contenere l'implementazione di alcuni algoritmi di inversione polinomiale
+(tra cui la versione di partenza dell'algoritmo di Bernstein-Yang), fornisce dei tool per testare la performance dei
+vari algoritmi per poi compararli; sono stati effettuati diversi test durante lo sviluppo, ma per brevità riportiamo solo
+i risultati dell'implementazione originale e quella finale.
+Ogni test prevede l'esecuzione di 1000 round per ogni $p$ di interesse; in ogni round viene misurato il tempo di esecuzione
+dell'algoritmo, prima con un input casuale, poi con un trinomio ($x^2+x+1$):\footnote{In ogni caso, l'inversione
+viene calcolata prendendo come modulo $x^{p}-1$} questo viene fatto per calcolare la t
+di Student per le due popolazioni e verificare
+che il tempo di esecuzione degli algoritmi sia costante in funzione dell'input (non della sua dimensione), garantendo che
+il crittosistema che lo usa sia immune (in questo punto) ad attacchi \textit{side channel} che puntano a risalire all'input
+analizzando i tempi di esecuzione.
+
+I test sono stati effettuati su una macchina AMD64, con processore AMD Ryzen 5 2500U (disabilitando il TurboBoost e
+bloccando la frequenza a 1.9GHz per ottenere risultati consistenti); l'implementazione è stata compilata con GCC 10.2.0, 
+abilitando la generazione di codice specifico per l'architettura utilizzata (\texttt{-march=native}) e abilitando il livello
+massimo di ottimizzazione (\texttt{-O3}).
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{images/mean.png}
+    \caption{Tempi di esecuzione}
+\end{figure}
+\begin{figure}
+    \includegraphics[width=\linewidth]{images/tstat.png}
+    \caption{Valori della t statistica}
+\end{figure}
+
+
+Analizzando i risultati, notiamo che la \textit{nuova} versione dell'algoritmo di Bernstein-Yang ha un miglioramento
+dal punto di vista temporale quasi costante per tutti i valori di $p$ (+18.56\%), rimanendo più lento dell'algoritmo
+KTT~\cite{takagi2001fast} per $p < 35507$ (rispetto a $p < 48371$ della versione originale); d'altro canto, i valori della t di Student per BY sono inferiori in modulo a 4.5, la 
+soglia sotto cui possiamo affermare che il tempo di esecuzione dell'algoritmo è indipendente dall'input con un
+livello di confidenza del 99.999\%, a differenza di KTT. 
+
+

@@ -21,6 +21,8 @@ The repository contains:
 <li> <b>src:</b> C11 implementation of the testing framework and the inversion algorithms to evaluate
 </ul>
 
+A brief explanation of the work done (in italian) can be found [here](docs/report/main.pdf)
+
 ## How it works
 ### The BY algorithm
 The BY algorithm for polynomial inversion adopts a <i>divide et impera</i> strategy, splitting the operands recursively (calling the <code>jumpdivstep</code> function) until they become as small as a machine word size; at this point, the <code>divstep</code> function is invoked.
@@ -41,9 +43,11 @@ The same approach can be also applied when calculating the <i>left operands</i>,
 ### Results
 The application of the above mentioned optimization resulted in a 18% faster algorithm that still keeps its constant-time nature, as we can see from the t-value. The dashed line represents the 4.5 threshold under which we state that the timing results obtained for a random element and a fixed trinomial (<i>x^2+x+1</i>) are independent with a confidence of 99.999%.
 
-Mean | Student's T
-- | -
-![Mean times](logs/specific/mean.png) | ![Mean times](logs/specific/tstat.png)
+Mean 
+![Mean times](docs/report/images/mean.png) 
+
+Student's T
+![Mean times](docs/report/images/tstat.png)
 
 
 ## License

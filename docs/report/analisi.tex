@@ -1,0 +1,71 @@
+\section{Analisi dell'algoritmo}
+L'algoritmo proposto in~\cite{bernstein2019fast} è basato su un approccio \textit{divide et impera}: l'operando viene diviso dalla funzione
+\texttt{jumpdivstep}, che prende in input due polinomi $f, g$, di grado al più $n$ e con $\delta = \deg{f} - \deg{g}$ e individua
+un \textit{pivot} $j$, che divide i polinomi a metà. La funzione \texttt{jumpdivstep} è quindi chiamata ricorsivamente passando come parametri le due 
+metà dei polinomi appena individuate, finché la loro dimensione non è sufficientemente piccola (vedi~\ref{impl}); questo punto viene invocata la 
+funzione \texttt{divstep}, che gestisce il caso base della ricorsione. 
+La funzione \texttt{jumpdivstep} prende come input di partenza la rappresentazione riflessa di modulo $f(x)$ ed elemento da invertire $a(x)$, e ritorna alla fine
+ la rappresentazione riflessa dell'inverso di $a(x)$, $\mathcal{H}_{0,1}$, con $V(x) \equiv a^{-1}(x)$.
+
+ \begin{algorithm}
+    \small
+    \SetAlgoLined
+    \BlankLine
+    \SetKwFunction{jumpdivstep}{jumpdivstep}
+    \SetKwFunction{invert}{invert}
+
+    \SetKwFunction{divstep}{divstep}
+    \SetKwProg{Fn}{function}{:}{}
+    \Fn{\jumpdivstep{$n, \delta, f(x), g(x)$}}{
+
+    \If{$n \leq ws$}{
+        \Return\texttt{divstep($n, \delta, f(x), g(x)$)\;}
+    }
+
+        $j \leftarrow \lfloor \frac{n}{2} \rfloor$\;
+        $\delta, \mathcal{P} \leftarrow$ \texttt{jumpdivstep}($j, \delta, f(x)\mod x^j, g(x)\mod x^j$)\;
+        $f^{\prime}(x) \leftarrow \mathcal{P}_{0,0}\cdot f(x) + \mathcal{P}_{0,1}\cdot g(x)$\;
+        $g^{\prime}(x) \leftarrow \mathcal{P}_{1,0}\cdot f(x) + \mathcal{P}_{1,1}\cdot g(x)$\;
+        $\delta, \mathcal{Q} \leftarrow$ \texttt{jumpdivstep}($n-j, \delta, \frac{f^{\prime}(x)}{x^j}, \frac{g^{\prime}(x)}{x^j}$)\;
+
+        \Return$\delta, (\mathcal{P}\times\mathcal{Q})$
+    }
+    \BlankLine
+    \Fn{\invert{$f(x), a(x)$}}{
+        $S(x) \leftarrow$ \texttt{MIRROR}($f(x)$)\;
+        $R(x) \leftarrow$ \texttt{MIRROR}($a(x)$)\;
+        $\delta, \mathcal{H} \leftarrow$ \texttt{jumpdivstep}($2m - 1, 1, S(x), R(x)$)\;
+        $V(x) \leftarrow$ \texttt{MIRROR}($\mathcal{H}_{0,1}$)\;
+        \Return$V(x)$\;
+
+    }
+
+     \caption{jumpdivstep}
+    \end{algorithm}
+    \subsection*{\textbf{\textit{Simulazione} dell'algoritmo}} Possiamo, partendo dall'algoritmo qui presentato, ricostruire un albero di ricorsione tracciando tutte le
+    chiamate ed i vari parametri necessari: la prima chiamata a \texttt{jumpdivstep} (riga 14) è la radice dell'albero, 
+    la prima chiamata effettuata (riga 6) corrisponde al figlio destro di un nodo, mentre la seconda (riga 9) corrisponde al
+    figlio sinistro; quando la dimensione degli operandi è pari o inferiore alla \textit{word size}, ossia quando viene 
+    invocata la funzione \texttt{divstep}, il nodo corrispondente nell'albero di ricorsione risulta essere una foglia.
+    
+    Analizzando l'albero di ricorsione ed i parametri relativi ai nodi, possiamo inoltre determinare le dimensioni
+    dei vettori che contengono i risultati intermedi ($\mathcal{P}, \mathcal{Q}$) e gli operandi intermedi
+    ($f^{\prime}(x), g^{\prime}(x)$), nonché gli indici di accesso ai suddetti per ogni chiamata. Da qui, possiamo \textit{simulare}
+    le chiamate attraversando l'albero usando un approccio \textit{depth-first}, dando priorità ai figli destri
+    (che per costruzione corrispondono alla prima chiamata). 
+    È inoltre interessante notare che le operazioni ed i parametri necessari per ogni chiamata dipendano solo dalla 
+    dimensione dei parametri di input, e non dai parametri stessi; questo ci permetterà di effettuare tutte le ottimizzazioni
+    riportate in~\ref{ott}, e quindi poter generare una versione
+    iterativa di \texttt{jumpdivstep} specifica per dimensione dell'input.
+
+    \subsubsection*{Contenuto dei nodi}
+    Ad ogni nodo dell'albero di ricorsione corrisponde una chiamata a \texttt{jumpdivstep}, ognuna caratterizzata
+    dai propri parametri, tra cui:
+    \begin{itemize}
+        \item \texttt{n}: grado massimo dei operandi ricevuti in input
+        \item \texttt{j}: grado massimo degli operandi passati alla prima chiamata ricorsiva (figlio destro)
+        \item \texttt{n-j}: grado massimo degli operandi passati alla seconda chiamata ricorsiva (figlio sinistro)
+        \item \texttt{num\_digits\_(n|j|nminusj)}: numero di \texttt{DIGIT} (vedi~\ref{impl}) necessari a contenere gli operandi di cui sopra
+    \end{itemize}
+
+

@@ -1,0 +1,11 @@
+\section{Introduzione}
+L' interesse per la ricerca nel campo della crittografia post-quantistica è cresciuto esponenzialmente
+con l'annuncio del National Institute of Standards and Technology dell'avvio del processo di valutazione
+e standardizzazione di uno o più algoritmi di crittografia asimmetrici resistenti ad attacchi di computer 
+quantistici.\footnote{\href{https://csrc.nist.gov/projects/post-quantum-cryptography}{https://csrc.nist.gov/projects/post-quantum-cryptography}};
+tra i candidati troviamo LEDAcrypt\cite{baldi2019ledacrypt, ledaKEM}, basato sul crittosistema McEliece.\\
+I crittosistemi basati sulla teoria dei codici hanno lo svantaggio di usare chiavi pubbliche piuttosto larghe; un modo per ridurre le dimensioni
+di queste chiavi è utilizzare famiglie di codici che consentono di essere rappresentati in modo più efficiente per quanto riguarda lo spazio occupato,
+come ad esempio i codici QC-MDPC (Quasi-cyclic moderate-density parity-check): questi codici sono composti da matrici a blocchi quadrate circolanti,
+dove ogni riga è ottenuta dallo shift circolare della precedente. L'aritmetica di queste matrici di dimensioni $p \times p$ è isomorfa a quella dei polinomi modulo
+$x^p-1$, per cui possiamo sfruttare questa proprietà per ridurre il tempo di esecuzione del calcolo dell'inverso.
