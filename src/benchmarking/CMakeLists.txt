@@ -7,7 +7,7 @@ set(OPTIMIZATION_FLAGS "-O2 -fipa-cp-clone -floop-interchange -fgcse-after-reloa
                         -fsplit-loops -fsplit-paths -ftree-loop-distribution -ftree-loop-vectorize \
                         -ftree-partial-pre -funswitch-loops -fvect-cost-model -fvect-cost-model=dynamic -fversion-loops-for-strides")
 
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -pedantic -Wuninitialized -fno-var-tracking-assignments -march=native -O0 -g3 -Wno-unused-function")
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -pedantic -Wuninitialized -fno-var-tracking-assignments -march=native -O3 -g3 -Wno-unused-function")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -pedantic -Wuninitialized -march=native -g3")
 message("FLAGS" ${CMAKE_C_FLAGS})

@@ -18,6 +18,7 @@
 DIGIT_SIZE_B = 0
 DIGIT_SIZE_b =0
 WS = 0
+AVX = True
 
 # Maximum size for direct multiplications
 CHUNK_SIZE = 9

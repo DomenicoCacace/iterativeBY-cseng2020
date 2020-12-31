@@ -134,9 +134,14 @@ def main():
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-ws", "--wordsize", help="The number of bits addressable by the CPU at once (default: 256)", default=256, type=int, dest="ws")
     argParser.add_argument("-s", "--digit-size", help="The number of bits per digit (default: 64)", default=64, type=int, dest="size")
+    argParser.add_argument("-n", "--no-avx", help="Generates code for machines not supporting AVX intrinsics", action="store_false", dest="AVX")
     args = argParser.parse_args()
     
     # Setting memory word size related parameters
+    if not args.AVX:
+        args.ws = args.size
+        k.AVX = False
+        
     k.WS = args.ws
     k.DIGIT_SIZE_b = args.size
     k.DIGIT_SIZE_B = k.DIGIT_SIZE_b >> 3
