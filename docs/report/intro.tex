@@ -4,8 +4,14 @@ con l'annuncio del National Institute of Standards and Technology dell'avvio del
 e standardizzazione di uno o più algoritmi di crittografia asimmetrici resistenti ad attacchi di computer 
 quantistici.\footnote{\href{https://csrc.nist.gov/projects/post-quantum-cryptography}{https://csrc.nist.gov/projects/post-quantum-cryptography}};
 tra i candidati troviamo LEDAcrypt\cite{baldi2019ledacrypt, ledaKEM}, basato sul crittosistema McEliece.\\
-I crittosistemi basati sulla teoria dei codici hanno lo svantaggio di usare chiavi pubbliche piuttosto larghe; un modo per ridurre le dimensioni
+I crittosistemi basati sulla teoria dei codici, come appunto LEDAcrypt, hanno lo svantaggio di usare chiavi pubbliche piuttosto larghe; un modo per ridurre le dimensioni
 di queste chiavi è utilizzare famiglie di codici che consentono di essere rappresentati in modo più efficiente per quanto riguarda lo spazio occupato,
 come ad esempio i codici QC-MDPC (Quasi-cyclic moderate-density parity-check): questi codici sono composti da matrici a blocchi quadrate circolanti,
-dove ogni riga è ottenuta dallo shift circolare della precedente. L'aritmetica di queste matrici di dimensioni $p \times p$ è isomorfa a quella dei polinomi modulo
-$x^p-1$, per cui possiamo sfruttare questa proprietà per ridurre il tempo di esecuzione del calcolo dell'inverso.
+dove ogni riga è ottenuta dallo shift circolare della precedente. L'aritmetica di queste matrici di dimensioni $p \times p$ è isomorfa a quella dei polinomi
+a coefficienti binari modulo $x^p-1$, per cui possiamo sfruttare questa proprietà per ridurre il tempo di esecuzione del calcolo dell'inverso.
+\paragraph*{Organizzazione.}
+Nella sezione~\ref{analisi} analizziamo in breve l'algoritmo di inversione e descriviamo come questo è stato \textit{simulato}. Nella sezione
+\ref{impl} descriviamo come i polinomi sono memorizzati e come le relative operazioni aritmetiche sono implementate; passiamo quindi a descrivere
+le principali criticità dell'implementazione proposta in~\cite{benchmark} e le relative ottimizzazioni sviluppate. Infine, nella sezione~\ref{risultati}
+andiamo a comparare i risultati dei benchmark della nuova implementazione con gli algoritmi proposti in~\cite{barenghi2020comprehensive},
+con particolare attenzione ai tempi d'esecuzione e all'indipendenza di questi dagli input.

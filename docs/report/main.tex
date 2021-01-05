@@ -60,6 +60,15 @@
 
 \usepackage{graphicx}
 
+\usepackage{mathtools}
+
+\usepackage{booktabs}
+
+\usepackage{pgfplots}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -68,6 +77,7 @@
 \setlength{\droptitle}{-4\baselineskip} % Move the title up
 
 \bibliographystyle{ieeetr}
+
 
 \pretitle{\begin{center}\Huge\bfseries} % Article title formatting
 \posttitle{\end{center}} % Article title closing formatting
@@ -79,9 +89,11 @@
 \date{} % Leave empty to omit a date
 \renewcommand{\maketitlehookd}{%
 \begin{abstract}
-In questa relazione analizziamo l'implementazione dell'algoritmo di inversione polinomiale presentato da Bernstein e Yang~\cite{bernstein2019fast}, analizzandone le
-caratteristiche e comparando le misurazioni dei tempi di esecuzione tramite un apposito framework~\cite{benchmark, barenghi2020comprehensive}. Da qui, provvederemo
-a creare un generatore di codice sorgente per ottimizzare l'implementazione delle operazioni più frequenti nell'algoritmo e ridurne il tempo di esecuzione.
+In questa relazione analizziamo l'algoritmo di inversione polinomiale proposto da D.J. Bernstein e B.Y. Yang, focalizzandoci in particolare su una sua implementazione
+per polinomi binari intesa per l'utilizzo all'interno di un crittosistema resistente ad attacchi di computer quantistici; passiamo quindi ad analizzare
+le criticità dell'implementazione, fornendo alcuni metodi per migliorare questi aspetti. Infine, valutiamo le performance e le proprietà dell'algoritmo comparandole
+con altri algoritmi per il medesimo scopo.
+
 \end{abstract}
 }
 

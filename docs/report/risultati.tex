@@ -1,4 +1,4 @@
-\section{Risultati}
+\section{Risultati}\label{risultati}
 Il framework~\cite{benchmark}, oltre a contenere l'implementazione di alcuni algoritmi di inversione polinomiale
 (tra cui la versione di partenza dell'algoritmo di Bernstein-Yang), fornisce dei tool per testare la performance dei
 vari algoritmi per poi compararli; sono stati effettuati diversi test durante lo sviluppo, ma per brevità riportiamo solo
@@ -15,15 +15,10 @@ I test sono stati effettuati su una macchina AMD64, con processore AMD Ryzen 5 2
 bloccando la frequenza a 1.9GHz per ottenere risultati consistenti); l'implementazione è stata compilata con GCC 10.2.0, 
 abilitando la generazione di codice specifico per l'architettura utilizzata (\texttt{-march=native}) e abilitando il livello
 massimo di ottimizzazione (\texttt{-O3}).
+\input{images/mean.tex}
+\input{images/tstat.tex}
+\input{images/memory.tex}
 
-\begin{figure}
-    \includegraphics[width=\linewidth]{images/mean.png}
-    \caption{Tempi di esecuzione}
-\end{figure}
-\begin{figure}
-    \includegraphics[width=\linewidth]{images/tstat.png}
-    \caption{Valori della t statistica}
-\end{figure}
 
 
 Analizzando i risultati, notiamo che la \textit{nuova} versione dell'algoritmo di Bernstein-Yang ha un miglioramento

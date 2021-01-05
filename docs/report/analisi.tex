@@ -1,18 +1,33 @@
-\section{Analisi dell'algoritmo}
-L'algoritmo proposto in~\cite{bernstein2019fast} è basato su un approccio \textit{divide et impera}: l'operando viene diviso dalla funzione
-\texttt{jumpdivstep}, che prende in input due polinomi $f, g$, di grado al più $n$ e con $\delta = \deg{f} - \deg{g}$ e individua
-un \textit{pivot} $j$, che divide i polinomi a metà. La funzione \texttt{jumpdivstep} è quindi chiamata ricorsivamente passando come parametri le due 
-metà dei polinomi appena individuate, finché la loro dimensione non è sufficientemente piccola (vedi~\ref{impl}); questo punto viene invocata la 
-funzione \texttt{divstep}, che gestisce il caso base della ricorsione. 
-La funzione \texttt{jumpdivstep} prende come input di partenza la rappresentazione riflessa di modulo $f(x)$ ed elemento da invertire $a(x)$, e ritorna alla fine
- la rappresentazione riflessa dell'inverso di $a(x)$, $\mathcal{H}_{0,1}$, con $V(x) \equiv a^{-1}(x)$.
+\section{Analisi dell'algoritmo}\label{analisi}
+In ~\cite{bernstein2019fast} gli autori descrivono due metodi per il calcolo di massimo comun divisore e inverso moltiplicativo: il primo per numeri interi,
+il secondo per anelli di polinomi; nello specifico, andremo a sfruttare quest'ultimo per anelli di polinomi a coefficienti binari per le ragioni precedentemente citate.
+
+L'algoritmo di inversione che andiamo ad analizzare è basato su un approccio \textit{divide et impera}: il polinomio da invertire e il modulo vengono suddivisi dalla funzione
+\texttt{jumpdivstep}, che prende in input due polinomi $f(x), g(x)$, di grado al più $n=2p-1$, con $\delta = \deg{(f(x))} - \deg{(g(x))}$ e individua
+un \textit{pivot} per suddividere gli operandi in due metà\footnote{Questa scelta si è rivelata essere ottimale, come riportato in ~\cite{barenghi2020comprehensive}, ma 
+qualsiasi valore di $j$ compreso tra $1$ ed $n-1$ è valido}, ovvero $j = \lfloor \frac{n}{2} \rfloor$. 
+
+La funzione \texttt{jumpdivstep} è quindi chiamata ricorsivamente passando come parametri le due 
+metà dei polinomi appena individuate, finché la loro dimensione non è sufficientemente piccola (ovvero fin quando la dimensione non è pari o inferiore a quella di una \textit{machine word}):
+a questo punto viene invocata la funzione \texttt{divstep}, che gestisce il caso base della ricorsione;
+i risultati trovati vengono quindi ricombinati fino ad ottenere il risultato finale.
+
+Nello specifico, la funzione \texttt{invert} chiama la funzione \texttt{jumpdivstep} passando come parametri le rappresentazioni riflesse del modulo $f(x)$ e dell'elemento da invertire $a(x)$: per rappresentazione riflessa
+intendiamo il polinomio ottenuto invertendo il coefficiente del termine $x^i$ con quello del termine $x^{\deg(S(x))-i}$, ottenuto tramite la funzione \texttt{mirror}; alla fine, la funzione
+ritorna la rappresentazione riflessa dell'inverso di $a(x)$, $H_{0,1}$, ottenuta dal prodotto dei risultati parziali calcolati dalle chiamate ricorsive.
 
  \begin{algorithm}
     \small
     \SetAlgoLined
-    \BlankLine
     \SetKwFunction{jumpdivstep}{jumpdivstep}
     \SetKwFunction{invert}{invert}
+    \KwIn{$f(x), g(x)$: polinomi binari\newline
+                $n$: grado massimo di $f(x)$\newline
+                $\delta = \deg{f(x)} - \deg{g(x)}$}
+    \KwOut{$P\times Q$: matrice di polinomi, risultato parziale dell'inversione}
+    \KwData{$ws$: dimensione in bit di una \textit{machine word}\newline
+                    $P$, $Q$: matrici di polinomi, contengono i risultati parziali delle due chiamate ricorsive}
+    \BlankLine
 
     \SetKwFunction{divstep}{divstep}
     \SetKwProg{Fn}{function}{:}{}
@@ -23,39 +38,55 @@ La funzione \texttt{jumpdivstep} prende come input di partenza la rappresentazio
     }
 
         $j \leftarrow \lfloor \frac{n}{2} \rfloor$\;
-        $\delta, \mathcal{P} \leftarrow$ \texttt{jumpdivstep}($j, \delta, f(x)\mod x^j, g(x)\mod x^j$)\;
-        $f^{\prime}(x) \leftarrow \mathcal{P}_{0,0}\cdot f(x) + \mathcal{P}_{0,1}\cdot g(x)$\;
-        $g^{\prime}(x) \leftarrow \mathcal{P}_{1,0}\cdot f(x) + \mathcal{P}_{1,1}\cdot g(x)$\;
-        $\delta, \mathcal{Q} \leftarrow$ \texttt{jumpdivstep}($n-j, \delta, \frac{f^{\prime}(x)}{x^j}, \frac{g^{\prime}(x)}{x^j}$)\;
+        $\delta, P \leftarrow$ \texttt{jumpdivstep}($j, \delta, f(x)\mod x^j, g(x)\mod x^j$)\;
+        $\bar{f(x)} \leftarrow P_{0,0}\cdot f(x) + P_{0,1}\cdot g(x)$\;
+        $\bar{g(x)} \leftarrow P_{1,0}\cdot f(x) + P_{1,1}\cdot g(x)$\;
+        $\delta, Q \leftarrow$ \texttt{jumpdivstep}($n-j, \delta, \frac{\bar{f(x)}}{x^j}, \frac{\bar{g(x)}}{x^j}$)\;
 
-        \Return$\delta, (\mathcal{P}\times\mathcal{Q})$
+        \Return{$\delta, (P\times Q)$}\;
     }
-    \BlankLine
-    \Fn{\invert{$f(x), a(x)$}}{
-        $S(x) \leftarrow$ \texttt{MIRROR}($f(x)$)\;
-        $R(x) \leftarrow$ \texttt{MIRROR}($a(x)$)\;
-        $\delta, \mathcal{H} \leftarrow$ \texttt{jumpdivstep}($2m - 1, 1, S(x), R(x)$)\;
-        $V(x) \leftarrow$ \texttt{MIRROR}($\mathcal{H}_{0,1}$)\;
-        \Return$V(x)$\;
-
-    }
-
-     \caption{jumpdivstep}
+    \caption{\texttt{jumpdivstep}}
     \end{algorithm}
-    \subsection*{\textbf{\textit{Simulazione} dell'algoritmo}} Possiamo, partendo dall'algoritmo qui presentato, ricostruire un albero di ricorsione tracciando tutte le
-    chiamate ed i vari parametri necessari: la prima chiamata a \texttt{jumpdivstep} (riga 14) è la radice dell'albero, 
-    la prima chiamata effettuata (riga 6) corrisponde al figlio destro di un nodo, mentre la seconda (riga 9) corrisponde al
+
+    \begin{algorithm}
+        \small
+        \SetAlgoLined
+        \KwIn{$f(x)$: polinomio irriducibile di $GF(2^p)$\newline
+                    $a(x)$: elemento invertibile di $GF(2^p)$}
+        \KwOut{$V(x)$, con $a^{-1}(x) \equiv V(x) \in GF(2^p)$}
+        \SetKwFunction{invert}{invert}
+    
+        \SetKwFunction{divstep}{divstep}
+        \SetKwProg{Fn}{function}{:}{}    
+        \BlankLine
+        \Fn{\invert{$f(x), a(x)$}}{
+            $S(x) \leftarrow$ \texttt{mirror}($f(x)$)\;
+            $R(x) \leftarrow$ \texttt{mirror}($a(x)$)\;
+            $\delta, H \leftarrow$ \texttt{jumpdivstep}($2p - 1, 1, S(x), R(x)$)\;
+            $V(x) \leftarrow$ \texttt{mirror}($H_{0,1}$)\;
+            \Return$V(x)$\;
+    
+        }
+        \caption{\texttt{invert}}
+    \end{algorithm}
+
+
+
+    \subsection*{\textbf{\textit{Simulazione} dell'algoritmo}} Possiamo, partendo dall'algoritmo qui presentato, ricostruire un albero di ricorsione binario tracciando tutte le
+    chiamate ed i vari parametri necessari: la prima chiamata a \texttt{jumpdivstep} (\texttt{invert}, riga 4) è la radice dell'albero, 
+    la prima chiamata effettuata (\texttt{jumpdivstep}, riga 6) corrisponde al figlio destro di un nodo, mentre la seconda (\texttt{jumpdivstep}, riga 9) corrisponde al
     figlio sinistro; quando la dimensione degli operandi è pari o inferiore alla \textit{word size}, ossia quando viene 
     invocata la funzione \texttt{divstep}, il nodo corrispondente nell'albero di ricorsione risulta essere una foglia.
     
     Analizzando l'albero di ricorsione ed i parametri relativi ai nodi, possiamo inoltre determinare le dimensioni
-    dei vettori che contengono i risultati intermedi ($\mathcal{P}, \mathcal{Q}$) e gli operandi intermedi
-    ($f^{\prime}(x), g^{\prime}(x)$), nonché gli indici di accesso ai suddetti per ogni chiamata. Da qui, possiamo \textit{simulare}
+    dei vettori che contengono i risultati intermedi ($P, Q$) e gli operandi intermedi
+    ($\bar{f(x)}, \bar{g(x)}$), nonché gli indici di accesso ai suddetti per ogni chiamata. Da qui, possiamo \textit{simulare}
     le chiamate attraversando l'albero usando un approccio \textit{depth-first}, dando priorità ai figli destri
-    (che per costruzione corrispondono alla prima chiamata). 
+    (che per costruzione corrispondono alla prima chiamata).
     È inoltre interessante notare che le operazioni ed i parametri necessari per ogni chiamata dipendano solo dalla 
-    dimensione dei parametri di input, e non dai parametri stessi; questo ci permetterà di effettuare tutte le ottimizzazioni
-    riportate in~\ref{ott}, e quindi poter generare una versione
+    dimensione dei parametri di input, e non dai parametri stessi: dato che le dimensioni sono note tramite un'analisi statica, possiamo derivare
+    l'albero di ricorsione a compile time; questo ci permetterà di effettuare tutte le ottimizzazioni
+    riportate in~\ref{impl}, e quindi poter generare una versione
     iterativa di \texttt{jumpdivstep} specifica per dimensione dell'input.
 
     \subsubsection*{Contenuto dei nodi}
@@ -65,7 +96,7 @@ La funzione \texttt{jumpdivstep} prende come input di partenza la rappresentazio
         \item \texttt{n}: grado massimo dei operandi ricevuti in input
         \item \texttt{j}: grado massimo degli operandi passati alla prima chiamata ricorsiva (figlio destro)
         \item \texttt{n-j}: grado massimo degli operandi passati alla seconda chiamata ricorsiva (figlio sinistro)
-        \item \texttt{num\_digits\_(n|j|nminusj)}: numero di \texttt{DIGIT} (vedi~\ref{impl}) necessari a contenere gli operandi di cui sopra
+        \item \texttt{num\_digits\_(n|j|nminusj)}: dimensione degli operandi di cui sopra, espressa in \texttt{digit}
     \end{itemize}
 
 
